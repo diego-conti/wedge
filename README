@@ -2,7 +2,7 @@ Wedge, a C++ library for symbolic computations in differential geometry. Mainly 
 
 Written by Diego Conti [diego.conti@unimib.it], 2007-2018
 
-Available from http://libwedge.sourceforge.net
+Available at https://github.com/diego-conti/wedge
 
 The essential functionality of Wedge is described in the paper http://arxiv.org/abs/0804.3193. If you use Wedge in your research, please quote that paper.
 

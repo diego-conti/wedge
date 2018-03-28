@@ -1,0 +1,13 @@
+297a298,309
+> {	//use registered function if defined
+> 		const registered_class_info * reg_info = &get_class_info();
+> 		const print_context_class_info * pc_info = &c.get_class_info();
+> 
+> 		const std::vector<print_functor> & pdt = reg_info->options.get_print_dispatch_table();
+> 		unsigned id = pc_info->options.get_id();
+> 		if (id < pdt.size() && (pdt[id].is_valid())) {
+> 			pdt[id](*this, c, level);
+> 			return;
+> 		}
+> 	}
+> 

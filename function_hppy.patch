@@ -1,0 +1,2 @@
+264a265
+> 	std::string get_latex_name() const {return registered_functions()[serial].TeX_name;}

@@ -1,0 +1,14 @@
+Dictionary 3.0
+
+Written by Diego Conti, diego.conti@unimib.it, 2008-2015.
+
+A library to compute the space of invariant forms on an associated bundle G\times_H V, where H acts sphere-transitively on V, using a method introduced informally in [BS], and studied in detail in [DC].
+Information on the groups and representation is hard-coded in the header files contained in the subdirectories groups, representations and dictionaries.
+At the moment, the implemented dictionaries are 
+	SU(3)\times_SU(2)\R^3, SU(3)\times_SO(3)\R^3
+and two dictionaries of the form
+	SU(3)\times_U(2) C^2, with different actions of U(2) on the fibre.
+
+References:
+[BS] Bryant, Robert L.; Salamon, Simon M. On the construction of some complete metrics with exceptional holonomy.  Duke Math. J.  58  (1989),  no. 3, 829--850.
+[DC] D. Conti. Invariant forms, associated bundles and Calabi-Yau metrics, J. Geom. Phys. 57 (2007) 2483-2508.

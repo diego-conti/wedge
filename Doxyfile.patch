@@ -1,0 +1,4 @@
+960c960
+< GENERATE_TAGFILE       = 
+---
+> GENERATE_TAGFILE       = ginac.HTML.tag

@@ -1,0 +1,14 @@
+304c304,305
+< static inline print_context *get_print_context(std::ios_base & s)
+---
+> //static inline
+> print_context *get_print_context(std::ios_base & s)
+310c311,312
+< static void set_print_context(std::ios_base & s, const print_context & c)
+---
+> //static
+> void set_print_context(std::ostream & s, const print_context & c)
+321c323
+< 	p = c.duplicate();
+---
+> 	p = c.duplicate(s);

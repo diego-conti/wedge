@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Wedge
+Description: A C++ library for symbolic computations in differential geometry
+Version: 0.3.0
+Libs: -L${libdir} -lwedge-0.3
+CFLAGS: -I${includedir}/wedge-0.3 -I${libdir}/wedge-0.3/include

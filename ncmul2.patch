@@ -1,0 +1,8 @@
+338d337
+< 	make_flat_inserter mf(evaledseq, true);
+340,342c339
+< 	{	ex factor = mf.handle_factor(*(cit++), 1);
+< 		append_factors(assocseq, factor);
+< 	}
+---
+> 		append_factors(assocseq, *cit++);

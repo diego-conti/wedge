@@ -1,0 +1,168 @@
+Version 0.1.1: 
+ Fixes in configure.ac and Makefile.am
+ Changed the behaviour of NormalForm<Lambda<V>> and GetComponents<Lambda<V>> to allow scalar components (i.e. passing an argument like 1+v+v*w does not cause an exception anymore)
+ Added a more complex example (Dictionary)
+ Function isOdd now accepts mixed-degree arguments
+
+Version 0.1.2
+Fixed:
+ GetSymbols now handles correctly containers with value-type ex
+ Fix in CocoaPolyAlgorithms::ElementModuloIdeal
+ Corrections in documentation
+ Fix in output operator for matrices
+ Updated examples
+ Fix in test file algebra.h
+ Fix in script getginac.sh
+Changed:
+ Christoffel symbols no longer assumed to be constant
+ PolyBasis<Variable> now supports symbols of type deriving from Variable
+ GStructure::manifold made private and accessible through an accessor
+ Registered classes now compute hash values
+Added:
+ Lie derivatives
+
+Version 0.2.0
+This version contains not only bugfixes and general improvements, but also a few interface changes.
+Fixed:
+ Lie derivative is now correctly defined as an even derivation
+ Reorganized the code for bilinear operators satisfying the Leibniz rule; in particular, the covariant derivative of a non-constant spinor now satisfies
+the Leibniz rule
+ Corrected formula for Ricci tensor, which was only valid for Riemannian connections.
+ Fixes for compatibility with GiNaC 1.4 tinfo system
+ Fix in output operators for ranges, matrices, subspaces
+ Cleaned up documentation
+Changed:
+ Connection::Nabla is now a template function with explicit specializations Nabla<VectorField> and Nabla<DifferentialForm>
+ All calls to lsolve are now directed through DefaultLinAlgAlgorithms::lsolve
+ Members of VSpace now use containers of equations instead of AffineSpace
+ Removed the unnecessary class AffineSpace
+ Removed the unnecessary AcceptScalars hack
+ Basis now expands elements upon insertion and uses NormalFormHelper internally
+ ManifoldWith now computes Lie bracket using directly the connection rather than going through d
+ Renamed Basis_impl to Basis and Basis to IBasis (so that the more frequently used Basis_impl has the simpler name)
+Added:
+ AffineBasis, a container for affine equations that performs automatic reduction
+ Introduced support for connections on a ManifoldWith
+
+Version 0.2.1
+Fixed:
+ ScalarProduct<VectorField> now works correctly.
+Changed:
+ Arageli support disabled by default
+ LeviCivitaConnection now uses the Lie bracket to compute the connection form, which is considerably faster.
+ Functions with a container parameter such as GetCoefficients now accept parameters of type GiNaC::lst.
+ LinearMapToSubstitutions now accepts ranges, and uses GiNaC::lsolve in some cases.
+Added:
+ Class Submersion, representing a Riemannian submersion, implementing the O'Neill formulas for Ricci and curvature.
+ New member function in Connection which returns the Ricci tensor as a matrix rather than a tensor.
+ Introduced VectorSpace::Components, an alternative to Basis::Components that enables one to select GiNaC's implementation of the Gauss elimination scheme even when the coefficients are non-numerical.
+
+Version 0.2.2
+Fixed:
+ Fixed a bug in configure.ac that would result in build errors on systems where CoCoA is not installed.
+ Script getginac.sh modified for compatibility with Solaris.
+ Fix in submersion.h to prevent a compiler error.
+ Adjusted code in test/connections.h to prevent a memory error.
+ Cxxtest headers made part of the distribution.
+
+Version 0.2.3
+Fixed:
+ Two-digits indices in Vectorspace are now enclosed in braces for correct LaTeX output.
+ BilinearOperator no longer converts the simple elements in the left-hand argument to the type specified as a template argument; a pointer is now used instead.
+ TensorProduct no longer converts the operands to the type specified as a template argument; this means that Tensor<DifferentialOneForm,V> and Tensor<VectorField,V> can now be used interchangeably.
+ Member function LinearCombinations::empty is now const. 
+ Introduced an exception DiscreteManifold, thrown by ConcreteManifold when the dimension is zero. This makes functions which return a Manifold object by value (e.g. GL::Stabilizer) behave more consistently.
+ ManifoldWith::HodgeStar overloaded to prevent "ambiguous reference" error.
+ Added a new rule to Wedge::normalize_roots.
+ Fix in examples/dictionary/dictionary.h for compatibility with gcc 4.3. 
+ Fix in autotools scripts to prevent a problem with "make install".
+Changed:
+ Now compatible with GiNaC 1.4.3, 1.4.4
+ Changed classes IterateOverSubsets and IterateOverPermutations to allow early stops.
+ Automake scripts of the test suite rewritten to compile individually (so less RAM is needed).
+ Polynomial ideals now support an arbitrary number of numeric roots (use CocoaPolyAlgorithms_R).
+ Can now use subs on objects of type Tensor.
+ GiNaC manipulator "tree" is now recognized by RegisteredNamed-derived classes.
+ GL::Stabilizer changed into a global function, which now supports non-standard frames (namely, whose elements are not simple).
+Added:
+ Member function LieGroup::KillingForm.
+ Introduced partial support for linear representations of a Lie algebra (or group).
+
+Version 0.2.4
+Fixed:
+ Fix in LieGroup::KillingForm.
+Changed:
+ Now compatible with GiNaC 1.5.1 
+Added:
+ Class SU, representing the special unitary group
+ Member function LieGroup::Threeform, defining the standard three-form on a Lie group
+ Performance tests
+
+
+Version 0.2.5
+Fixed:
+ Fixed bug in VectorSpace::GetSolutions that resulted in an error in the case that the vector space is zero.
+ Fixed bug in IBasis::AllComponents; argument is now correctly expanded.
+ Fixed bug in SubBasis::addToComplement
+ Fixed bug in LieGroup::HasParameters::Declare_d
+ Fixed bug in CocoaPolyAlgorithms::ElementModuloIdeal, would crash when zero passed as parameter.
+ Corrections in documentation
+ Improved ChooseLinearlyIndependentRows
+ Corrected definition of fundamental 3-form in class G2Structure
+ Autoinstaller now checks for "patch"
+ Fixed "'compare_same_type' was not declared in this scope, and no declarations were found by argument-dependent lookup..." error in wedgealgebraic.h
+ Fix in automake scripts (libraries are now linked with in correct order)
+Changed:
+ Self-registering template classes completely rewritten. It is now possible to derive from realsymbol or possymbol; symbol-derived algebraic classes
+ are no longer real-domain by default.
+ New idiom GetCoefficients<Poly<T> > to handle polynomials rather than linear combinations.
+ Template function degree altered to work for polynomials as well, beside exterior algebras Lambda<V>.
+ Added a specific exception class used by IBasis::Components when the argument is not in the vector space.
+ More informative error handling in lsolve.
+ Improvements in interface and implementation of LinearMapToSubstitutions.
+ Logging functions now ignore strings exceeding a specified length, which can be altered using the manipulator MaxLength.
+ Non-latex matrix output written in matrix form.
+ GinacLinAlgAlgorithms now uses Gauss' elimination to take matrix inverses when the entries are not rational functions.
+ Improved performance of LeviCivitaConnection's constructor
+ Rearranged the code for VSpace::GetSolutions, in sight of future introduction of a version that works with parameters
+ Now compatible with CoCoaLib 0.9953, GiNaC 1.6.2, gcc 4.7.3
+Added:
+ Added iterator access to the vector of coordinates of a VectorSpace.
+ New classes Submersion, TransverseRiemannianStructure and TransverseLeviCivitaConnection, replacing the old class Submersion.
+ PolyBasis_impl::RadicalContains,  PolyBasis_impl::IdealIntersection
+
+Version 0.3.0
+Fixed: 
+ Updated automake scripts for Automake 1.14 and Boost 1.58
+ Fixed automake scripts in /test to enable test debugging
+ Fixed a bug involving non-expanded differential forms when taking tensor products
+ Fixed a bug involving non-expanded differential forms when applying derivations
+ Equation now always displays latex output
+ Moved non-template function definitions from linearaction.h to linearaction.cpp to prevent multiple definitions
+ Added some missing #include directives.
+ Minor fixes for compatibility with CoCoALib 0.99539
+ Class Manifold can now compute d of constant scalars
+ AbstractLieSubgroup now correctly simplifies roots when checking that d^2=0
+ Updated patches for GiNaC 1.6.7
+Changed:
+ Parser code rewritten using Spirit X3.
+ Added ad hoc exception ddNotZeroException
+ Variable name parsing replaced by class Name.
+ Can no longer construct Lambda1<V> from V (or DifferentialOneForm from VectorField)
+ AbstractLieGroup is now a template, and supports parameters
+ Minor change in latex multi-line output.
+ NormalForm now also collects coefficients
+ Functions renamed according to a naming convention.
+ Manifold::Check_ddZero now accepts a simplifier as a parameter
+ Code rewritten using C++17
+ GiNaC is now shipped inside the package rather than downloaded by a script 
+Added:
+ Classes PseudoRiemannianStructure and PseudoLeviCivita
+ AbstractLieGroup with parameters
+ Classes pqStructure and CoherentSplitting that enable computations with "coherent splittings"
+ Adjoint representation
+ Added a second constructor to AbstractLieSubgroup
+ Stream manipulator OmitArgument for a nicer output of functions of a single variable and their derivatives
+ Stream manipulator Label to print vectors of equations of the form x_1=? , ... , x_n=?
+ Simplifiers
+ 

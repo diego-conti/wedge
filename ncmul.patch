@@ -1,8 +1,0 @@
-256c256
-< 		(is_exactly_a<ncmul>(e))) {
----
-> 		(is_a<ncmul>(e))) {
-269c269
-< 		(is_exactly_a<ncmul>(e))) {
----
-> 		(is_a<ncmul>(e))) {

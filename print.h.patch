@@ -1,0 +1,11 @@
+68c68,69
+< 	classname();
+---
+> 	classname();\
+> 	virtual classname * duplicate(std::ostream & os) const {classname* copy=new classname(os,options); copy->initialize_from(*this); return copy; } \
+100a102
+> 
+101a104
+> 
+107a111
+> 	virtual void initialize_from(const print_context& o) {}	//for print_contexts that have other data members beside options

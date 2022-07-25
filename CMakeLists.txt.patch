@@ -1,0 +1,6 @@
+189,191c189
+< if (MAKEINFO)
+< 	add_subdirectory(doc)
+< endif()
+---
+> 

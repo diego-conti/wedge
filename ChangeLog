@@ -166,3 +166,13 @@ Added:
  Stream manipulator Label to print vectors of equations of the form x_1=? , ... , x_n=?
  Simplifiers
  
+Version 0.4.0
+Fixed:
+ Improved registration code to avoid static initialization race conditions.
+ Updated code for compatibility with GiNaC 1.8.3.
+ Minor fixes for compatibility with CoCoaLib 0.99800.
+Changed:
+ Switched to cmake.
+ Reorganized files in directories. This breaks compatibility with older versions, hence the increase in minor version.
+Removed:
+ Dictionary example. This should have been a separate program from the beginning.

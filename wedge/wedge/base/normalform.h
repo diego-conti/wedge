@@ -38,10 +38,7 @@ struct LambdaVectorNormalForm {
 	using const_iterator = exmap::const_iterator;
 };
 
-inline ostream& operator<<(ostream& os, const VectorNormalForm& linear_combination)
-{
-	return os<<linear_combination.CollectCoefficients();
-}
+ostream& operator<<(ostream& os, const VectorNormalForm& linear_combination);
 
 }
 #endif

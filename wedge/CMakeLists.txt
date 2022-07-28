@@ -6,7 +6,7 @@ add_compile_options(-g -O3 -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wsign
 
 set(BASE_SRC wedge/base/normalform.cpp wedge/base/logging.cpp wedge/base/utilities.cpp  wedge/base/wexception.cpp wedge/base/wedgealgebraic.cpp wedge/base/utilities.cpp)
 set(CONNECTIONS_SRC wedge/connections/connection.cpp wedge/connections/transverseconnection.cpp)
-set(CONVENIENCE_SRC wedge/convenience/latex.cpp wedge/convenience/omitfunctionargument.cpp wedge/convenience/parse.cpp wedge/convenience/simplifier.cpp)
+set(CONVENIENCE_SRC wedge/convenience/latex.cpp wedge/convenience/canonicalprint.cpp wedge/convenience/omitfunctionargument.cpp wedge/convenience/parse.cpp wedge/convenience/simplifier.cpp)
 set(LIE_ALGEBRAS_SRC wedge/liealgebras/liegroup.cpp wedge/liealgebras/liesubgroup.cpp)
 set(LINEARALGEBRA_SRC wedge/linearalgebra/bilinearform.cpp wedge/linearalgebra/ginaclinalg.cpp)
 set(MANIFOLDS_SRC wedge/manifolds/manifold.cpp wedge/manifolds/function.cpp wedge/manifolds/differentialform.cpp wedge/manifolds/liederivative.cpp  wedge/manifolds/fderivative.cpp)

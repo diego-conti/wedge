@@ -1,5 +1,6 @@
 #include "normalform.h"
 #include "expressions.h"
+#include "wedge/convenience/canonicalprint.h"
 
 namespace Wedge {
 using namespace std;
@@ -84,6 +85,30 @@ ex VectorNormalForm::CollectCoefficients() const {
 	for (auto& pair : inverse)
 		result+=pair.first*pair.second;
 	return result;
+}
+
+void print_first_term(ostream& os, const string& coeff, const string& vector) {
+	if (coeff=="1") os<<vector;
+	else os<<coeff<<vector;
+}
+void print_term(ostream& os, const string& coeff, const string& vector) {
+	if (coeff=="1") os<<vector;
+	else if (coeff=="-1") os<<"-"<<vector;
+	else if (coeff.at(0)=='-') os<<coeff<<vector;
+	else os<<"+"<<coeff<<vector;
+}
+
+ostream& operator<<(ostream& os, const VectorNormalForm& linear_combination)
+{
+	static auto mul_precedence=mul(1,1).precedence()-1;
+	map<string,string> coeffs_by_string_rep;
+	for (auto& pair: linear_combination)
+		coeffs_by_string_rep.insert(make_pair(to_string_using(os,pair.first,mul_precedence),to_string_using(os,pair.second,mul_precedence)));
+	auto i=coeffs_by_string_rep.begin();
+	print_first_term(os,i->second,i->first);
+	while (++i!=coeffs_by_string_rep.end())
+		print_term(os,i->second, i->first);
+	return os;
 }
 
 }

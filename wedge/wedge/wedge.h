@@ -32,6 +32,7 @@
 #include "wedge/connections/torsionfreeconnection.h"
 #include "wedge/connections/transverseconnection.h"
 #include "wedge/convenience/latex.h"
+#include "wedge/convenience/canonicalprint.h"
 #include "wedge/convenience/omitfunctionargument.h"
 #include "wedge/convenience/simplifier.h"
 #include "wedge/liealgebras/liegroupextension.h"

@@ -86,7 +86,30 @@ public:
 		TS_ASSERT_THROWS(LambdaVectorNormalForm{x+x*b},WedgeException<std::runtime_error>);
 		TS_ASSERT_THROWS(LambdaVectorNormalForm{2*x*b},WedgeException<std::runtime_error>);
 	}
-	void testLambdaVectorNormalForm()
+	void testPrintNormalForm() {
+		V x(N.x),y(N.y),z(N.z(1));
+		symbol a("a1"),b("b");
+		VectorNormalForm linear(a*x+a*b*b*y+(a+b)*z);
+		stringstream s;
+		s<<linear;
+		TS_ASSERT_EQUALS(s.str(),"a1x+a1*b^2y+(a1+b)z1");
+		s.str("");
+		s<<latex;
+		s<<linear;
+		TS_ASSERT_EQUALS(s.str(),"a1x+ a1 b^{2}y+{(a1+b)}z_1");
+	}
+	void testPrintNormalFormMinus() {
+		V x(N.x),y(N.y),z(N.z(1));
+		symbol a("a1"),b("b");
+		VectorNormalForm linear(-a*x-y-(a+b)*z);
+		stringstream s;
+		s<<linear;
+		TS_ASSERT_EQUALS(s.str(),"-a1x-y-(a1+b)z1");
+		s.str("");
+		s<<latex;
+		s<<linear;
+		TS_ASSERT_EQUALS(s.str(),"-a1x- y-{(a1+b)}z_1");
+	}	void testLambdaVectorNormalForm()
 	{
 		ex sqrt3=sqrt(ex(3));
 		symbol t;

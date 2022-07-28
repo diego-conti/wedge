@@ -174,5 +174,7 @@ Fixed:
 Changed:
  Switched to cmake.
  Reorganized files in directories. This breaks compatibility with older versions, hence the increase in minor version.
+ CoCoA is no longer optional. 
 Removed:
  Dictionary example. This should have been a separate program from the beginning.
+ Support for arageli.

@@ -2,10 +2,12 @@
 #include "wedge/base/wedgealgebraic.h"
 #include "wedge/convenience/parse.h"
 #include "wedge/convenience/simplifier.h"
+#include "wedge/convenience/canonicalprint.h"
 #include <cxxtest/TestSuite.h>
 #include "wedge/linearalgebra/lambda.h"
 #include "wedge/manifolds/concretemanifold.h"
 #include "test.h"
+#include <regex>
 
 using namespace Wedge;
 using namespace GiNaC;
@@ -14,6 +16,7 @@ WEDGE_DECLARE_NAMED_ALGEBRAIC(V,Vector)
 
 WEDGE_DECLARE_NAMED_ALGEBRAIC(W,Vector)
 
+WEDGE_DECLARE_NAMED_ALGEBRAIC(X,symbol)
 
 
 //test the parsing functions
@@ -35,7 +38,6 @@ public:
 
 	void testParseCocoa()
 	{
-#ifdef HAVE_COCOA
 		logging_level=LOGGING_LEVEL_DEBUG;
 		char s[]="x[1],x[1]+x[2], -x[1]+x[2],-2*x[1]-x[2],-2*x[1]^2+x[2]^2*x[0],3*x[1]*(x[1]-x[2]),1/2*x[1],x[0]^2 +1/2*x[0]";
 		exvector x(10);
@@ -49,7 +51,6 @@ public:
 		TS_ASSERT_EQUALS(v[5],3*x[1]*(x[1]-x[2]));
 		TS_ASSERT_EQUALS(v[6],x[1]/2);
 		TS_ASSERT_EQUALS(v[7],pow(x[0],2)+x[0]/2);
-#endif
 	}
 	void testParseForms()
 	{
@@ -73,6 +74,63 @@ public:
 		TS_ASSERT_EQUALS(2*M.e(3)+4*sqrt(ex(3))*M.e(1),forms[4]);
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"[a]*2"), std::invalid_argument);
 
+	}
+	void testToStringUsing() {
+		symbol psi("psi");
+		stringstream s;
+		TS_ASSERT_EQUALS(get_print_context(s),nullptr);
+		TS_ASSERT_EQUALS(to_string_using(s,psi),"psi");
+		s<<latex;
+		TS_ASSERT_EQUALS(to_string_using(s,psi),"\\psi");
+		s<<dflt;
+		TS_ASSERT_EQUALS(to_string_using(s,psi),"psi");
+		power(psi,2).print(*make_unique<print_dflt>(s));
+		TS_ASSERT_EQUALS(s.str(),"psi^2");
+		TS_ASSERT_EQUALS(to_string_using(s,power(psi,2)),"psi^2");
+	}
+	void testCanonicalPrintDflt() {
+		symbol a1("a1"), a2("a2"), psi("psi"),a("a");
+
+		TS_ASSERT_EQUALS(to_canonical_string(-a),"-a");
+		TS_ASSERT_EQUALS(to_canonical_string(-1/a),"-a^(-1)");
+		TS_ASSERT_EQUALS(to_canonical_string(-a*psi),"-a*psi");
+		TS_ASSERT_EQUALS(to_canonical_string(a2-a),"-a+a2");
+		TS_ASSERT_EQUALS(to_canonical_string(-a2+a),"a-a2");
+		TS_ASSERT_EQUALS(to_canonical_string(2*a2-2*a),"-2*a+2*a2");
+
+		TS_ASSERT_EQUALS(to_canonical_string(-a+a1*a1-a2-psi),"-a+a1^2-a2-psi");
+		TS_ASSERT_EQUALS(to_canonical_string(1/a1*a*psi*a/a1),"a1^(-2)*a^2*psi");
+		TS_ASSERT_EQUALS(to_canonical_string(a1/a),"a1*a^(-1)");
+		TS_ASSERT_EQUALS(to_canonical_string((a+a1)/a2),"(a+a1)*a2^(-1)");
+		TS_ASSERT_EQUALS(to_canonical_string(a*a1),"a*a1");
+		TS_ASSERT_EQUALS(to_canonical_string(a*a1+a),"a+a*a1");
+	}
+	string to_latex_canonical_string(ex x) {
+		stringstream s;
+		s<<latex;
+		canonical_print(s,x);
+		return s.str();
+	}
+
+	void testCanonicalPrintLatex() {
+		X a1(N.a(1)), a2(N.a(2)),psi(N.psi), a(N.a),z(N.z);
+
+		TS_ASSERT_EQUALS(to_latex_canonical_string(-1/(a*a)),"-a^{-2}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(-a),"-a");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(-a*psi),"-a \\psi");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(-z*psi),"-\\psi z");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(-a+a1*a1-a2-psi),"-a+a_1^2-a_2-\\psi");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(1/a1*a*psi*a/a1),"a^2 a_1^{-2} \\psi");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(a1/a),"a^{-1} a_1");
+		TS_ASSERT_EQUALS(to_latex_canonical_string((a+a1)/a2),"(a+a_1) a_2^{-1}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(a*a1),"a a_1");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(a*a1+a),"a+a a_1");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(pow(a,pow(a,a))),"a^{a^a}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(pow(psi,pow(psi,psi))),"\\psi^{\\psi^\\psi}");
+		static auto alpha=std::regex{"[a-zA-Z]*"};
+		cout<<ex_to<symbol>(psi).get_name()<<endl;
+		cout<< boolalpha<<regex_match("psi",alpha)<<endl;
+		TS_ASSERT(is_a<symbol>(psi) && regex_match(ex_to<symbol>(psi).get_name(),alpha));
 	}
 };
 

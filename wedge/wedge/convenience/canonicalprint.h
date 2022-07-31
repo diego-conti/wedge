@@ -25,6 +25,7 @@
 namespace Wedge {
 void canonical_print(ostream& os, ex x);
 string to_canonical_string(ex x);
+string to_latex_canonical_string(ex x);
 
 string to_string_using(const print_context* pc, ex x, int level=0);
 string to_string_using(ostream& os, ex x, int level=0);

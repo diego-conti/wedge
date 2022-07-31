@@ -38,7 +38,5 @@ struct LambdaVectorNormalForm {
 	using const_iterator = exmap::const_iterator;
 };
 
-ostream& operator<<(ostream& os, const VectorNormalForm& linear_combination);
-
 }
 #endif

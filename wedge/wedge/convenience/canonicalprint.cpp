@@ -224,4 +224,10 @@ string to_canonical_string(ex x) {
 	canonical_print(s,x);
 	return s.str();
 }
+string to_latex_canonical_string(ex x) {
+	stringstream s;
+	s<<latex;
+	canonical_print(s,x);
+	return s.str();
+}
 }

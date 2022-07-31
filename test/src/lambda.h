@@ -27,7 +27,7 @@
 #include <cxxtest/TestSuite.h>
 #include "test.h"
 #include "wedge/linearalgebra/lambda.h"
-
+#include "wedge/convenience/canonicalprint.h"
 WEDGE_DECLARE_NAMED_ALGEBRAIC(V,Vector)
 WEDGE_DECLARE_NAMED_ALGEBRAIC(W,Vector)
 
@@ -86,30 +86,21 @@ public:
 		TS_ASSERT_THROWS(LambdaVectorNormalForm{x+x*b},WedgeException<std::runtime_error>);
 		TS_ASSERT_THROWS(LambdaVectorNormalForm{2*x*b},WedgeException<std::runtime_error>);
 	}
-	void testPrintNormalForm() {
+	void testCanonicalPrint() {
 		V x(N.x),y(N.y),z(N.z(1));
-		symbol a("a1"),b("b");
-		VectorNormalForm linear(a*x+a*b*b*y+(a+b)*z);
-		stringstream s;
-		s<<linear;
-		TS_ASSERT_EQUALS(s.str(),"a1x+a1*b^2y+(a1+b)z1");
-		s.str("");
-		s<<latex;
-		s<<linear;
-		TS_ASSERT_EQUALS(s.str(),"a1x+ a1 b^{2}y+{(a1+b)}z_1");
+		symbol a("a1","a_1"),b("b");
+		ex linear(a*x+a*b*b*y+(a+b)*z);
+		TS_ASSERT_EQUALS(to_canonical_string(linear),"a1*b^2*y+a1*x+a1*z1+b*z1");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(linear),"a_1 b^2 y+a_1 x+a_1 z_1+b z_1");
 	}
-	void testPrintNormalFormMinus() {
+	void testCanonicalPrintMinus() {
 		V x(N.x),y(N.y),z(N.z(1));
-		symbol a("a1"),b("b");
-		VectorNormalForm linear(-a*x-y-(a+b)*z);
-		stringstream s;
-		s<<linear;
-		TS_ASSERT_EQUALS(s.str(),"-a1x-y-(a1+b)z1");
-		s.str("");
-		s<<latex;
-		s<<linear;
-		TS_ASSERT_EQUALS(s.str(),"-a1x- y-{(a1+b)}z_1");
-	}	void testLambdaVectorNormalForm()
+		symbol a("a1","a_1"),b("b");
+		ex linear(-a*x-y-(a+b)*z);
+		TS_ASSERT_EQUALS(to_canonical_string(linear),"-y-a1*x-a1*z1-b*z1");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(linear),"-y-a_1 x-a_1 z_1-b z_1");
+	}
+	void testLambdaVectorNormalForm()
 	{
 		ex sqrt3=sqrt(ex(3));
 		symbol t;

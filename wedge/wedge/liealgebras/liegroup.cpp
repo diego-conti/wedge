@@ -21,8 +21,21 @@
 
 #include "wedge/liealgebras/liegroup.h"
 #include "wedge/convenience/parse.h"
+#include "wedge/convenience/canonicalprint.h"
 
 namespace Wedge {
+
+void LieGroup::canonical_print(ostream& os) const {
+	os<<"(";
+	auto i=e().begin();
+	Wedge::canonical_print(os,d(*i));
+	while (++i!=e().end()) {
+		os<<",";
+		Wedge::canonical_print(os,d(*i));
+	}
+	os<<")";
+}
+
 
 namespace internal {
 

@@ -75,6 +75,12 @@ public:
  * @todo Optimize
  */ 
 	ex ThreeForm() const;
+
+	/** @brief Print out the structure constants in the form (de^1,...,de^n).
+	 * Wedge's canonical printing functions are used for consistent output through different runs.
+	 */
+
+	void canonical_print(ostream& os) const;
 };
 
 /** @brief Overloaded output operator

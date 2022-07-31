@@ -127,10 +127,16 @@ public:
 		TS_ASSERT_EQUALS(to_latex_canonical_string(a*a1+a),"a+a a_1");
 		TS_ASSERT_EQUALS(to_latex_canonical_string(pow(a,pow(a,a))),"a^{a^a}");
 		TS_ASSERT_EQUALS(to_latex_canonical_string(pow(psi,pow(psi,psi))),"\\psi^{\\psi^\\psi}");
-		static auto alpha=std::regex{"[a-zA-Z]*"};
-		cout<<ex_to<symbol>(psi).get_name()<<endl;
-		cout<< boolalpha<<regex_match("psi",alpha)<<endl;
-		TS_ASSERT(is_a<symbol>(psi) && regex_match(ex_to<symbol>(psi).get_name(),alpha));
+	}
+
+	void testCanonicalPrintForms() {
+		ConcreteManifold M(6);
+		symbol a("a");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(ParseDifferentialForm(M.e(),"2*12")),"2 e^{12}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(ParseDifferentialForm(M.e(),"2*12+34")),"2 e^{12}+e^{34}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(ParseDifferentialForm(M.e(),"-2*12-34")),"-2 e^{12}-e^{34}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(ParseDifferentialForm(M.e(),"-[a]*12-34",a)),"-a e^{12}-e^{34}");
+
 	}
 };
 

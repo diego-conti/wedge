@@ -70,6 +70,17 @@ public:
 		TS_ASSERT(SU3.IsUnimodular());
 	}
 
+	void testCanonicalPrint() {
+		AbstractLieGroup<> G("0,0,[sqrt(3)]*12,13+23");
+		stringstream s;
+		G.canonical_print(s);
+		TS_ASSERT_EQUALS(s.str(),"(0,0,sqrt(3)*(e1*e2),e1*e3+e2*e3)")
+		s.str("");
+		s<<latex;
+		G.canonical_print(s);
+		TS_ASSERT_EQUALS(s.str(),"(0,0,\\sqrt{3} e^{12},e^{13}+e^{23})")
+	}
+
 	void testGeneric() {
 
 		GenericLieGroup G(3);

@@ -44,7 +44,21 @@ bool is_latex(const print_context& c) {
 
 struct Term {
 	string representation;
-	string representation_for_comparison;
+	string representation_for_comparison;	//a string extracted from the actual representation to be used for ordering
+	string ncmul_factor;					//the factor of type ncmul inside the term, if it is a product, or ""
+	int type_order;	//an integer depending on the expression's type, ensuring that muls and ncmuls come after other objects
+
+	//if x is an ncmul or a product with an ncmul factor, return a representation of the ncmul. This ensures that
+	//a term such as 2e^{12} comes before a term such as e^{34}.
+	static string ncmul_within(ex x) {
+		if (is_a<mul>(x)) {
+			for (int i=0;i<x.nops();++i)
+				if (is_a<ncmul>(x.op(i))) return to_canonical_string(x.op(i));
+		}
+		else if (is_a<ncmul>(x))
+			return to_canonical_string(x);
+		return{};
+	}
 
 	static string extract_essential(const string s) {
 		int pos=0;
@@ -54,13 +68,25 @@ struct Term {
 		int length=(power==string::npos)? power-pos : string::npos;
 		return s.substr(pos,length);
 	}
+
+	static bool is_product(ex x) {
+		return is_a<ncmul>(x) || is_a<mul>(x);
+	}
+	static int type_code(ex x) {
+		return (is_product(x)&& is_product(-x))? 1: 0;
+	}
+	auto to_tuple_for_comparison() const {
+		return std::tie(type_order,ncmul_factor,representation_for_comparison);
+	}
 public:
 	Term(const print_context& c, ex x, int level) :
 		representation {to_canonical_string_using(c,x,level)},
-		representation_for_comparison{extract_essential(representation)}
+		representation_for_comparison{extract_essential(representation)},
+		ncmul_factor{ncmul_within(x)},
+		type_order{type_code(x)}
 		{}
 	bool operator<(const Term& other) const {
-		return representation_for_comparison<other.representation_for_comparison;
+		return to_tuple_for_comparison()<other.to_tuple_for_comparison();
 	}
 	string rep() const {return representation;}
 };
@@ -136,6 +162,17 @@ class CanonicalPrintVisitor : public visitor,public add::visitor, public mul::vi
 		static int power_precedence=power{2,3}.precedence();
 		c.s<<to_canonical_string_using(c,x,power_precedence);
 	}
+	void print_square_root(ex argument) {
+		if (is_latex(c)) c.s<<"\\sqrt{"<<to_canonical_string_using(c,argument,0)<<"}";
+		else c.s<<"sqrt("<<to_canonical_string_using(c,argument,0)<<")";
+	}
+	void print_power(ex base, ex exponent) {
+		static auto precedence=power(2,ex(1)/20).precedence();
+		c.s<<to_canonical_string_using(c,base,precedence);
+		c.s<<"^";
+		if (is_latex(c)) print_latex_exponent(exponent);
+		else print_dflt_exponent(exponent);
+	}
 public:
 	CanonicalPrintVisitor(const print_context& c, int level): c{c},level{level} {}
 	void visit(const mul& x) {
@@ -155,10 +192,8 @@ public:
 		x.print(c,prev_level);
 	}
 	void visit (const power& x) {
-		c.s<<to_canonical_string_using(c,x.op(0),x.precedence());
-		c.s<<"^";
-		if (is_latex(c)) print_latex_exponent(x.op(1));
-		else print_dflt_exponent(x.op(1));
+		if (x.op(1)==ex(1)/2) print_square_root(x.op(0));
+		else print_power(x.op(0),x.op(1));
 	}
 };
 

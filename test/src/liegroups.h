@@ -80,16 +80,17 @@ public:
 		G.canonical_print(s);
 		TS_ASSERT_EQUALS(s.str(),"(0,0,\\sqrt{3} e^{12},e^{13}+e^{23})")
 
-		AbstractLieGroup<> H("0,0,12+[sqrt(3)]*12");
+		AbstractLieGroup<> H("0,0,-12+[sqrt(3)]*12");
 		s.str("");
 		s<<dflt;
 		H.canonical_print(s);
-		TS_ASSERT_EQUALS(s.str(),"(0,0,(1+sqrt(3))*(e1*e2))")
+		TS_ASSERT_EQUALS(s.str(),"(0,0,(-1+sqrt(3))*(e1*e2))")
 		s.str("");
 		s<<latex;
 		H.canonical_print(s);
-		TS_ASSERT_EQUALS(s.str(),"(0,0,(1+\\sqrt{3}) e^{12})")
+		TS_ASSERT_EQUALS(s.str(),"(0,0,(-1+\\sqrt{3}) e^{12})")
 	}
+
 
 	void testGeneric() {
 

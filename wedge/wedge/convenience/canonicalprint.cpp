@@ -43,6 +43,7 @@ bool is_latex(const print_context& c) {
 }
 
 struct Term {
+	string zero_level_representation;
 	string representation;
 	string representation_for_comparison;	//a string extracted from the actual representation to be used for ordering
 	string ncmul_factor;					//the factor of type ncmul inside the term, if it is a product, or ""
@@ -78,10 +79,17 @@ struct Term {
 	auto to_tuple_for_comparison() const {
 		return std::tie(type_order,ncmul_factor,representation_for_comparison);
 	}
+	static bool is_negative_numeric(ex x) {
+		return  is_a<numeric>(x) && ex_to<numeric>(x).is_negative();
+	}
+	static bool is_negative(ex x) {
+		return is_negative_numeric(x) || (is_a<mul>(x) && is_negative_numeric(x.op(x.nops())));
+	}
 public:
 	Term(const print_context& c, ex x, int level) :
-		representation {to_canonical_string_using(c,x,level)},
-		representation_for_comparison{extract_essential(representation)},
+		zero_level_representation {to_canonical_string_using(c,x,0)},
+		representation {is_negative(x) ? zero_level_representation :to_canonical_string_using(c,x,level)},
+		representation_for_comparison{extract_essential(zero_level_representation)},
 		ncmul_factor{ncmul_within(x)},
 		type_order{type_code(x)}
 		{}
@@ -102,7 +110,6 @@ public:
 		for (int i=0;i<s.nops();++i)
 			terms.emplace(c,s.op(i),s.precedence());
 	}
-	//TODO handle level
 	void print(const print_context& pc,int level) const {
 		if (precedence<level) pc.s<<"(";
 		auto i=terms.begin();
@@ -134,7 +141,7 @@ protected:
 		string s=term.rep();
 		assert(s.length()>0);
 		if (s[0]!='-') pc.s<<"+";
-		pc.s<<term.representation;
+		pc.s<<s;
 	}
 public:
 	using Terms::Terms;

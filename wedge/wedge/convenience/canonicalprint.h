@@ -23,6 +23,12 @@
 #include "wedge/base/wedgebase.h"
 
 namespace Wedge {
+
+/** @brief Canonical output of a Ginac ex, with terms sorted in a consistent order
+ * Notice that no simplification is performed, since there is no "universal" simplification command in GiNaC.
+ * Thus, (a+b)*x and a*x+b*x will give different outputs.
+ * The caller should invoke the appropriate simplifiation command, e.g. canonical_print(x.normal());
+ */
 void canonical_print(ostream& os, ex x);
 string to_canonical_string(ex x);
 string to_latex_canonical_string(ex x);

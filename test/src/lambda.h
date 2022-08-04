@@ -90,15 +90,15 @@ public:
 		V x(N.x),y(N.y),z(N.z(1));
 		symbol a("a1","a_1"),b("b");
 		ex linear(a*x+a*b*b*y+(a+b)*z);
-		TS_ASSERT_EQUALS(to_canonical_string(linear),"a1*b^2*y+a1*x+a1*z1+b*z1");
-		TS_ASSERT_EQUALS(to_latex_canonical_string(linear),"a_1 b^2 y+a_1 x+a_1 z_1+b z_1");
+		TS_ASSERT_EQUALS(to_canonical_string(linear),"(a1+b)*z1+a1*b^2*y+a1*x");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(linear),"(a_1+b) z_1+a_1 b^2 y+a_1 x");
 	}
 	void testCanonicalPrintMinus() {
 		V x(N.x),y(N.y),z(N.z(1));
 		symbol a("a1","a_1"),b("b");
 		ex linear(-a*x-y-(a+b)*z);
-		TS_ASSERT_EQUALS(to_canonical_string(linear),"-y-a1*x-a1*z1-b*z1");
-		TS_ASSERT_EQUALS(to_latex_canonical_string(linear),"-y-a_1 x-a_1 z_1-b z_1");
+		TS_ASSERT_EQUALS(to_canonical_string(linear),"-y-(a1+b)*z1-a1*x");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(linear),"-y-(a_1+b) z_1-a_1 x");
 	}
 	void testLambdaVectorNormalForm()
 	{

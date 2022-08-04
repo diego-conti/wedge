@@ -31,7 +31,7 @@ void LieGroup::canonical_print(ostream& os) const {
 	Wedge::canonical_print(os,d(*i));
 	while (++i!=e().end()) {
 		os<<",";
-		Wedge::canonical_print(os,d(*i));
+		Wedge::canonical_print(os,NormalForm<DifferentialForm>(d(*i)));
 	}
 	os<<")";
 }

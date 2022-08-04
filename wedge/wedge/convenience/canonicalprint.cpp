@@ -178,7 +178,7 @@ public:
 	void visit(const mul& x) {
 		if (is_negative_numeric(x.op(x.nops()-1))) {
 			c.s<<"-";	//handle level
-			(-x).normal().accept(*this);
+			(-x).accept(*this);
 		}
 		else Product{c,x}.print(c,level);
 	}
@@ -208,14 +208,14 @@ void canonical_print(ostream& os, ex x) {
 	unique_ptr<print_context> newpc;
 	auto& pc=print_context_from_stream(os,newpc);
 	auto visitor=CanonicalPrintVisitor{pc,0};
-	x.normal().accept(visitor);
+	x.accept(visitor);
 }
 
 string to_canonical_string_using(const print_context& c, ex x, int level) {
 	stringstream s;
 	unique_ptr<print_context> strpc{c.duplicate(s)};
 	auto visitor=CanonicalPrintVisitor{*strpc,level};
-	x.normal().accept(visitor);
+	x.accept(visitor);
 	return s.str();
 }
 

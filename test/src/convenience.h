@@ -127,6 +127,8 @@ public:
 		TS_ASSERT_EQUALS(to_latex_canonical_string(a*a1+a),"a+a a_1");
 		TS_ASSERT_EQUALS(to_latex_canonical_string(pow(a,pow(a,a))),"a^{a^a}");
 		TS_ASSERT_EQUALS(to_latex_canonical_string(pow(psi,pow(psi,psi))),"\\psi^{\\psi^\\psi}");
+		TS_ASSERT_EQUALS(to_latex_canonical_string(1/ex(2)*(1+a1)*z),"\\frac{1}{2} (1+a_1) z");
+
 	}
 
 	void testCanonicalPrintForms() {

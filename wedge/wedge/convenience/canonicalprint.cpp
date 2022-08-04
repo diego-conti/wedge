@@ -42,7 +42,7 @@ bool is_latex(const print_context& c) {
 	return dynamic_cast<const print_latex*>(&c);
 }
 
-struct Term {
+class Term {
 	string zero_level_representation;
 	string representation;
 	string representation_for_comparison;	//a string extracted from the actual representation to be used for ordering
@@ -74,7 +74,9 @@ struct Term {
 		return is_a<ncmul>(x) || is_a<mul>(x);
 	}
 	static int type_code(ex x) {
-		return (is_product(x)&& is_product(-x))? 1: 0;
+		if (is_product(x) && is_product(-x)) return 1;
+		else if (is_a<numeric>(x)) return -1;
+		else return 0;
 	}
 	auto to_tuple_for_comparison() const {
 		return std::tie(type_order,ncmul_factor,representation_for_comparison);
@@ -97,6 +99,7 @@ public:
 		return to_tuple_for_comparison()<other.to_tuple_for_comparison();
 	}
 	string rep() const {return representation;}
+	string zero_level_rep_if_numeric() const {return type_order<0? zero_level_representation : representation;}
 };
 
 class Terms {
@@ -123,7 +126,7 @@ public:
 class Product : public Terms {
 protected:
 	void print_first_term(const print_context& pc, const Term& term) const override {
-		pc.s<<term.rep();
+		pc.s<<term.zero_level_rep_if_numeric();
 	}
 	void print_term_after_first(const print_context& pc, const Term& term) const {
 		char sep= is_latex(pc)? ' ' : '*';

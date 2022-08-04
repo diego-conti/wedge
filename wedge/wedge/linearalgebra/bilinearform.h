@@ -205,5 +205,19 @@ protected:
 
 };
 
+
+class ScalarProductDefinedByMatrix : public BilinearFormWithFrame {
+	matrix m_, m_inverse_;
+public:
+	ScalarProductDefinedByMatrix(const Frame& frame, matrix m) : BilinearFormWithFrame(frame),m_{m}, m_inverse_{m.inverse()} {}
+protected:
+	ex MatrixEntry(OneBased i, OneBased j) const {
+		return m_(i-1,j-1);
+	}
+	ex InverseMatrixEntry(OneBased i, OneBased j) const {
+		return m_inverse_(i-1,j-1);
+	}
+};
+
 }
 #endif

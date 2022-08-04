@@ -100,6 +100,24 @@ public:
 };
 
 
+/** @brief Pseudoriemannian metric on a manifold, represented by a matrix relative to some frame
+ */
+
+class PseudoRiemannianStructureByMatrix : public PseudoRiemannianStructure {
+	const ScalarProductDefinedByMatrix scalar_product;
+public:
+/** @brief
+ *  @param manifold The manifold on which the structure is defined.
+ *  @param frame A coframe with respect to which the metric is defined; could be orthonormal or not.
+ *  @param m The metric relative to the coframe
+*/
+	PseudoRiemannianStructureByMatrix(const Manifold* manifold, const Frame& frame, const matrix& m) :
+		GStructure{manifold, frame}, PseudoRiemannianStructure(manifold,frame), scalar_product{frame, m} {}
+	const BilinearForm& ScalarProduct() const {return scalar_product;}
+
+	pair<ex,matrix> DecomposeRicci(matrix ricci) const override {throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByMatrix::DecomposeRicci");}
+};
+
 } /** @} */
 
 #endif

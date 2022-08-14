@@ -7,7 +7,7 @@ A [GiNaC](http://www.ginac.de)-based C++ library for symbolic computations in di
 You need to have installed [cmake](https://cmake.org/), [gmp](https://gmplib.org/), [cln](https://www.ginac.de/CLN) and [CoCoa](https://cocoa.dima.unige.it/cocoa/cocoalib/).
 *Wedge* also uses [cxxtest](http://cxxtest.com) and [GiNaC](http://www.ginac.de), which are downloaded by `cmake` at configure time.
 
-*Wedge* 0.4.0 has been developed and tested on Ubuntu Linux 22.04 with:
+*Wedge* 0.4.1 has been developed and tested on Ubuntu Linux 22.04 with:
 
 * `Cocoalib` 0.99800
 * `Ginac` 1.8.3

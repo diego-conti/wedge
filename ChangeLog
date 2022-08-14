@@ -183,6 +183,7 @@ Removed:
  Fixed:
   fixed error in tests introduced in version 0.4.0 which resulted in exception-throwing assertions not being checked
  Changed:
+  Constructors for AbstractLieGroup now accept strings as well as string literals
   Constructors for AbstractLieGroup<true> now accept an arbitrary number of parameters of type lst, ex, Name or NameIndex
  Added:
   Class PseudoRiemannianStructureByMatrix, allowing one to define a pseudo-riemannian metric by giving the matrix of the scalar product relative to a frame

@@ -214,6 +214,7 @@ public:
    * @sa ParseDifferentialForms(const exvector& frame, const char* to_parse)
   */
 	AbstractLieGroup(const char* structure_constants);
+	AbstractLieGroup(const string& structure_constants): AbstractLieGroup{structure_constants.c_str()} {}
 };
 
 

@@ -59,11 +59,16 @@ AbstractLieGroup<false>::AbstractLieGroup(const char* structure_constants)  : Co
 	Check_ddZero();
 }
 
-void AbstractLieGroup<true>::Initialize(const exvector& forms) 
-{
-	assert(forms.size()==Dimension());
-	exvector::const_iterator i=forms.begin(),j=e().begin();
-	while (i!=forms.end())
+list<ex> collate() {
+	return {};
+}
+
+AbstractLieGroup<true>::AbstractLieGroup(DelegatedConstructor,const char* structure_constants,const lst& parameters)
+	: ConcreteManifold(internal::GetFrameLength(structure_constants)) {
+	auto de=ParseDifferentialForms(e(),structure_constants,parameters);
+	assert(de.size()==ConcreteManifold::Dimension());
+	exvector::const_iterator i=de.begin(),j=e().begin();
+	while (i!=de.end())
 	{		
 		LOG_DEBUG(*j);
 		LOG_DEBUG(*i);
@@ -73,68 +78,6 @@ void AbstractLieGroup<true>::Initialize(const exvector& forms)
 }
 
 
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const Name& n1) : ConcreteManifold(internal::GetFrameLength(structureConstants))
-{
-	ex symbols=StructureConstant(n1);
-	Initialize(ParseDifferentialForms(e(),structureConstants,symbols));
-}
-
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const Name& n1, const Name& n2) : ConcreteManifold(internal::GetFrameLength(structureConstants))
-{
-	Initialize(ParseDifferentialForms(e(),structureConstants, lst{StructureConstant(n1),StructureConstant(n2)}));
-}
-
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const Name& n1, const Name& n2, const Name& n3) : ConcreteManifold(internal::GetFrameLength(structureConstants))
-{
-	;
-	Initialize(ParseDifferentialForms(e(),structureConstants,lst {StructureConstant(n1),StructureConstant(n2),StructureConstant(n3)}));
-}
-
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const Name& n1, const Name& n2, const Name& n3, const Name& n4) : ConcreteManifold(internal::GetFrameLength(structureConstants))
-{
-	Initialize(ParseDifferentialForms(e(),structureConstants,lst{StructureConstant(n1),StructureConstant(n2),StructureConstant(n3),StructureConstant(n4)}));
-}
-
-
-lst& GetNewStructureConstants(lst& variables, const NameRange& n)
-{
-	for (NameRange::const_iterator i=n.begin();i!=n.end();++i)
-		variables.append(StructureConstant(*i));
-	return variables;
-}
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const NameRange& n1) : ConcreteManifold
-(internal::GetFrameLength(structureConstants))
-{
-	lst variables;
-	Initialize(ParseDifferentialForms(e(),structureConstants,GetNewStructureConstants(variables,n1)));
-}
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const NameRange& n1, const NameRange& n2) : ConcreteManifold
-(internal::GetFrameLength(structureConstants))
-{
-	lst variables;
-	GetNewStructureConstants(variables,n1); GetNewStructureConstants(variables,n2);
-	Initialize(ParseDifferentialForms(e(),structureConstants,variables));
-}
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const NameRange& n1, const NameRange& n2, const NameRange& n3) : ConcreteManifold
-(internal::GetFrameLength(structureConstants))
-{
-	lst variables;
-	GetNewStructureConstants(variables,n1); GetNewStructureConstants(variables,n2); GetNewStructureConstants(variables,n3);
-	Initialize(ParseDifferentialForms(e(),structureConstants,variables));
-}
-
-
-AbstractLieGroup<true>::AbstractLieGroup(const char* structureConstants, const Name& n1, const Name& n2, const Name& n3, const Name& n4, const Name& n5) : ConcreteManifold(internal::GetFrameLength(structureConstants))
-{
-	Initialize(ParseDifferentialForms(e(),structureConstants,lst{StructureConstant(n1),StructureConstant(n2),StructureConstant(n3),StructureConstant(n4),StructureConstant(n5)}));
-}
 
 Subspace<DifferentialForm> LieGroupHasParameters<false>::ClosedForms(int degree) const
 {

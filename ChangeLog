@@ -178,3 +178,13 @@ Changed:
 Removed:
  Dictionary example. This should have been a separate program from the beginning.
  Support for arageli.
+ 
+ Version 0.4.1
+ Fixed:
+  fixed error in tests introduced in version 0.4.0 which resulted in exception-throwing assertions not being checked
+ Changed:
+  Constructors for AbstractLieGroup<true> now accept an arbitrary number of parameters of type lst, ex, Name or NameIndex
+ Added:
+  Class PseudoRiemannianStructureByMatrix, allowing one to define a pseudo-riemannian metric by giving the matrix of the scalar product relative to a frame
+  functions canonical_print, to_canonical_string and to_latex_canonical_string for canonical printing of ginac ex's (both in dflt and latex output). 
+  LieGroup::canonical_print for canonical printing of Lie groups

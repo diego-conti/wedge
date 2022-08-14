@@ -25,7 +25,7 @@
 #include "wedge/base/expressions.h"
 
 //To debug, run cxxtestgen with the flag --no-eh
-#ifndef CXXTEST_HAVE_EH
+#ifndef _CXXTEST_HAVE_EH
 #undef TS_ASSERT_THROWS
 #define TS_ASSERT_THROWS(p1,p2) 
 #endif 

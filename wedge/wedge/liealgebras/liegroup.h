@@ -221,25 +221,57 @@ public:
 
 template<> 
 class AbstractLieGroup<true> : public LieGroupHasParameters<true>, public ConcreteManifold, public virtual Has_dTable {
-	void Initialize(const exvector& forms);
+	struct DelegatedConstructor {} delegate_constructor_tag;
+	AbstractLieGroup(DelegatedConstructor,const char* structure_constants,const lst& parameters);
 public:
   /** @brief Define a Lie group by the structure constants given in Salamon's notation
    *  @param structure_constants A string of the form, e.g., "0,0,12,-13+2*42"; bracket notation such as [sqrt(3)] is allowed
+   *  @params parameters a sequence of symbols, lists of symbols, Name's, or NameIndex's corresponding to parameters used in the definition of the Lie algebra
+   * In order to use a parameter, say a, use the bracket notation as in [a]*12. The parameter needs to also be passed in the constructor, either as an ex, or an element of a lst of ex,
+   * or by name, in which case a StructureConstant object with that name is created.
    *
-   * In order to introduce parameters, use the bracket notation as in [a]*12, and pass its name to the constructor. A StructureConstant object with that name
-   * will be created and used as a parameter.
    * @sa ParseDifferentialForms(const exvector& frame, const char* to_parse)
   */
-	AbstractLieGroup(const char* structure_constants, const Name& n1);
-	AbstractLieGroup(const char* structure_constants, const Name& n1, const Name& n2);
-	AbstractLieGroup(const char* structure_constants, const Name& n1, const Name& n2, const Name& n3);
-	AbstractLieGroup(const char* structure_constants, const Name& n1, const Name& n2, const Name& n3, const Name& n4);
-	AbstractLieGroup(const char* structure_constants, const Name& n1, const Name& n2, const Name& n3, const Name& n4, const Name& n5);
-	AbstractLieGroup(const char* structure_constants, const NameRange& n1);
-	AbstractLieGroup(const char* structure_constants, const NameRange& n1, const NameRange& n2);
-	AbstractLieGroup(const char* structure_constants, const NameRange& n1, const NameRange& n2, const NameRange& n3);
+	template<typename... Parameters>
+	AbstractLieGroup(const char* structure_constants, Parameters&&... parameters);
+	template<typename... Parameters>
+	AbstractLieGroup(const string& structure_constants, Parameters&&... parameters);
 };
 
+list<ex> collate();	//trivial specialization returning empty list
+template<typename... Parameters>
+list<ex> collate(list<ex> parameter_lst, Parameters&&... parameters) {
+	parameter_lst.splice(parameter_lst.end(),collate(std::forward<Parameters>(parameters)...));
+	return parameter_lst;
+}
+template<typename... Parameters>
+list<ex> collate(ex parameter, Parameters&&... parameters) {
+	list<ex> as_list=is_a<lst>(parameter)? list<ex>{parameter.begin(),parameter.end()}: list<ex>{parameter};
+	return collate(move(as_list),std::forward<Parameters>(parameters)...);
+}
+template<typename... Parameters>
+list<ex> collate(const exvector& parameter_lst, Parameters&&... parameters) {
+	return collate(list<ex>{parameter_lst.begin(),parameter_lst.end()},std::forward<Parameters>(parameters)...);
+}
+template<typename... Parameters>
+list<ex> collate(const Name& parameter_name, Parameters&&... parameters) {
+	ex parameter=StructureConstant{parameter_name};
+	return collate(parameter,std::forward<Parameters>(parameters)...);
+}
+template<typename... Parameters>
+list<ex> collate(const NameRange& range, Parameters&&... parameters) {
+	list<ex> structure_constants;
+	std::transform(range.begin(),range.end(),back_inserter(structure_constants),
+			[] (NameAndIndex&& name) {return StructureConstant{move(name)};});
+	return collate(move(structure_constants),std::forward<Parameters>(parameters)...);
+}
+
+template<typename... Parameters>
+AbstractLieGroup<true>::AbstractLieGroup(const char* structure_constants, Parameters&&... parameters) :
+	AbstractLieGroup{delegate_constructor_tag,structure_constants,collate(std::forward<Parameters>(parameters)...)} {}
+template<typename... Parameters>
+AbstractLieGroup<true>::AbstractLieGroup(const string& structure_constants, Parameters&&... parameters) :
+	AbstractLieGroup{delegate_constructor_tag,structure_constants.c_str(),std::forward<Parameters>(parameters)...} {}
 
 
 /** @brief A generic Lie group, whose structure constants depend on parameters

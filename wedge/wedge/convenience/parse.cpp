@@ -70,7 +70,7 @@ GiNaC::symtab SymtabFromSymbols(ex symbols) {
 	else {
 		assert(is_a<lst>(symbols));
 		for (int i=0;i<symbols.nops();++i) {
-			assert(is_a<symbol>(symbols.op(i)));
+			if (!is_a<symbol>(symbols.op(i))) throw InvalidArgument(__FILE__,__LINE__,symbols.op(i));
 			string name=ex_to<symbol> (symbols.op(i)).get_name(); 
 			table[name]=symbols.op(i);
 		}

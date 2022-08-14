@@ -44,7 +44,22 @@ public:
 			TS_ASSERT_EQUALS(G.d(V.e(i)),0);
 		}
 	}
-
+	void testAbstractGroupParameters() {
+		ex a=symbol("a");
+		auto G=AbstractLieGroup<true>{"0,0,[a]*12,[b1+c]*12+[b2]*13",a,NameRange(N.b,1,3),N.c};
+		stringstream s;
+		G.canonical_print(s);
+		cout<<s.str();
+		TS_ASSERT_EQUALS(s.str(),"(0,0,a*(e1*e2),(b1+c)*(e1*e2)+b2*(e1*e3))")
+	}
+	void testAbstractGroupParametersLst() {
+		symbol a("a");
+		auto G=AbstractLieGroup<true>{"0,0,[a]*12,[b1+c]*12+[b2]*13",N.c,lst{a},NameRange(N.b,1,3)};
+		stringstream s;
+		G.canonical_print(s);
+		cout<<s.str();
+		TS_ASSERT_EQUALS(s.str(),"(0,0,a*(e1*e2),(b1+c)*(e1*e2)+b2*(e1*e3))")
+	}
 	void testAbstractGroup() {
 		AbstractLieGroup<> SU3("-23-45+2*67,13+46-57-[sqrt(3)]*58,-12-47+[sqrt(3)]*48-56,"
 					"15-26+37-[sqrt(3)]*38,"

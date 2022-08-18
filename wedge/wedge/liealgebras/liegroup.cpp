@@ -23,7 +23,7 @@
 
 namespace Wedge {
 
-void LieGroup::canonical_print(ostream& os) const {
+ostream& LieGroup::canonical_print(ostream& os) const {
 	os<<"(";
 	auto i=e().begin();
 	Wedge::canonical_print(os,d(*i));
@@ -31,7 +31,7 @@ void LieGroup::canonical_print(ostream& os) const {
 		os<<",";
 		Wedge::canonical_print(os,NormalForm<DifferentialForm>(d(*i)));
 	}
-	os<<")";
+	return os<<")";
 }
 
 

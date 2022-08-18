@@ -78,7 +78,7 @@ public:
 	 * Wedge's canonical printing functions are used for consistent output through different runs.
 	 */
 
-	void canonical_print(ostream& os) const;
+	ostream& canonical_print(ostream& os) const;
 };
 
 /** @brief Overloaded output operator

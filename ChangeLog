@@ -189,3 +189,8 @@ Removed:
   Class PseudoRiemannianStructureByMatrix, allowing one to define a pseudo-riemannian metric by giving the matrix of the scalar product relative to a frame
   functions canonical_print, to_canonical_string and to_latex_canonical_string for canonical printing of ginac ex's (both in dflt and latex output). 
   LieGroup::canonical_print for canonical printing of Lie groups
+
+ Version 0.4.2
+ Changed:
+  AbstractLieGroup constructors now accept strings as well as string literals 
+  LieGroup::canonical_print returns reference to ostream

@@ -43,12 +43,13 @@ template<typename TypeToDisplay> class DisplayType;
 
 class FormParser {
 	static const exvector* reference_coframe_;
-	ex OneFormFromDigit(char digit) const {
-		int index = digit-'0';
-		if (index>9 || index<0) {
-			index = digit+10-'a';
-		}
+	ex OneFormFromIndex(int index) const {
+		if (index<=0 || index>reference_coframe_->size()) throw ParseError(index,__FILE__,__LINE__);
 		return reference_coframe_->at(index-1);
+	}
+	ex OneFormFromDigit(char digit) const {
+		if (digit>'0' && digit<='9') return OneFormFromIndex(digit-'0');
+		else return OneFormFromIndex(digit-'a'+10);
 	}
 	template<typename Container>
 	ex Parse(Container digit_sequence) const {

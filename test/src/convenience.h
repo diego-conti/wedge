@@ -92,7 +92,20 @@ public:
 		TS_ASSERT_EQUALS(1/(a*a)*(M.e(1)+M.e(2))*M.e(3),forms[3]);
 		TS_ASSERT_EQUALS(2*M.e(3)+4*sqrt(ex(3))*M.e(1),forms[4]);
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"[a]*2"), std::invalid_argument);
-
+		TS_ASSERT_EQUALS(ParseDifferentialForm(M.e(),"-12+[a]*34+5*(6+7)+8(9+a)",a), -M.e(1)*M.e(2)+a*M.e(3)*M.e(4)+5*(M.e(6)+M.e(7))+M.e(8)*(M.e(9)+M.e(10)));
+	}
+	void testParseFormsBounds() {
+		ConcreteManifold N(3);
+		TS_ASSERT_THROWS(ParseDifferentialForm(N.e(),"4"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(N.e(),"1+4"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(N.e(),"14"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(N.e(),"2*4"),ParseError);
+		ConcreteManifold M(13);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"e"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"e1"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"1e"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"1e"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"1+e"),ParseError);
 	}
 	void testToStringUsing() {
 		symbol psi("psi");

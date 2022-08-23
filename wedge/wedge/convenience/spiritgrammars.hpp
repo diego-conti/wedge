@@ -49,7 +49,9 @@ class FormParser {
 	}
 	ex OneFormFromDigit(char digit) const {
 		if (digit>'0' && digit<='9') return OneFormFromIndex(digit-'0');
-		else return OneFormFromIndex(digit-'a'+10);
+		else if (digit>='a' && digit<='z') return OneFormFromIndex(digit-'a'+10);
+		else if (digit>='A' && digit<='Z') return OneFormFromIndex(digit-'A'+10+26);
+		else throw ParseError(digit,__FILE__,__LINE__);
 	}
 	template<typename Container>
 	ex Parse(Container digit_sequence) const {
@@ -144,7 +146,7 @@ namespace DifferentialFormGrammar {
 	auto ginac_expression_def='[' >> ((*(ascii::char_ - ']'))[expression_parser]) >> ']';
 	auto quotient_def =  (integer >> '/'> integer)[read_quotient];
 	auto constant_def = ginac_expression | quotient | integer;
-	auto simple_form_def=(+x3::xdigit)[form_parser];
+	auto simple_form_def=(+x3::alnum)[form_parser];
 	auto product_def = (constant >>  '*' > factor)[read_product];
 	auto factor_def = product |  simple_form |  ('('> form > ')');
 	auto wedge_product_def=	(factor % -x3::lit('^'))[read_wedge_product];	//the wedge is optional

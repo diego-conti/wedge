@@ -104,8 +104,20 @@ public:
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"e"),ParseError);
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"e1"),ParseError);
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"1e"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"cg"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"gc"),ParseError);
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"1e"),ParseError);
 		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"1+e"),ParseError);
+	}
+	void testParseFormsLarge() {
+		ConcreteManifold M(61);
+		TS_ASSERT_EQUALS(ParseDifferentialForm(M.e(),"a"),M.e(10));
+		TS_ASSERT_EQUALS(ParseDifferentialForm(M.e(),"z"),M.e(35));
+		TS_ASSERT_EQUALS(ParseDifferentialForm(M.e(),"A"),M.e(36));
+		TS_ASSERT_EQUALS(ParseDifferentialForm(M.e(),"Z"),M.e(61));
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"$"),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"."),ParseError);
+		TS_ASSERT_THROWS(ParseDifferentialForm(M.e(),"\\"),ParseError);
 	}
 	void testToStringUsing() {
 		symbol psi("psi");

@@ -194,3 +194,5 @@ Removed:
  Changed:
   AbstractLieGroup constructors now accept strings as well as string literals 
   LieGroup::canonical_print returns reference to ostream
+  ParseDifferentialForms now accepts letters a-z and A-Z for dimensions up to 61, and throws ParseError on out-of-bounds errors.
+  

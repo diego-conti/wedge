@@ -45,7 +45,7 @@ public:
  	*  - 1+2  -> \f$e^1+e^2\f$
  	*  - 4*1+sqrt(2)*45  -> \f$4e^1+\sqrt2e^4\wedge e^5\f$
  	* 
- 	*  @note This notation will not work for frames of length greater than 9.
+ 	*  @note Forms between e^10 and e^35 can be defined using the letters a-z; forms between e^36 and e^61 with the letters A-Z.
 	 */
 	ExVector ParseDifferentialForms(const exvector& frame, const char* to_parse);
 	/** @overload

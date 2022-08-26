@@ -205,15 +205,22 @@ protected:
 
 
 class ScalarProductDefinedByMatrix : public BilinearFormWithFrame {
-	matrix m_, m_inverse_;
+	matrix metric_on_coframe,metric_on_frame;
+	ScalarProductDefinedByMatrix(const Frame& frame, const matrix& metric_on_coframe, const matrix& metric_on_frame)
+		: BilinearFormWithFrame(frame),metric_on_coframe{metric_on_coframe}, metric_on_frame{metric_on_frame} {}
 public:
-	ScalarProductDefinedByMatrix(const Frame& frame, matrix m) : BilinearFormWithFrame(frame),m_{m}, m_inverse_{m.inverse()} {}
+	static ScalarProductDefinedByMatrix OnCoframe(const Frame& frame, const matrix& metric_on_coframe) {
+		return ScalarProductDefinedByMatrix{frame, metric_on_coframe,metric_on_coframe.inverse()};
+	}
+	static ScalarProductDefinedByMatrix OnFrame(const Frame& frame, const matrix& metric_on_frame) {
+		return ScalarProductDefinedByMatrix{frame, metric_on_frame.inverse(),metric_on_frame};
+	}
 protected:
 	ex MatrixEntry(OneBased i, OneBased j) const {
-		return m_(i-1,j-1);
+		return metric_on_coframe(i-1,j-1);
 	}
 	ex InverseMatrixEntry(OneBased i, OneBased j) const {
-		return m_inverse_(i-1,j-1);
+		return metric_on_frame(i-1,j-1);
 	}
 };
 

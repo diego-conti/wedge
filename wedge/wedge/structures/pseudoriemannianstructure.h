@@ -103,14 +103,21 @@ public:
 
 class PseudoRiemannianStructureByMatrix : public PseudoRiemannianStructure {
 	const ScalarProductDefinedByMatrix scalar_product;
+	PseudoRiemannianStructureByMatrix(const Manifold* manifold, const Frame& frame, ScalarProductDefinedByMatrix&& scalar_product) :
+		GStructure{manifold, frame}, PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)} {}
 public:
 /** @brief
  *  @param manifold The manifold on which the structure is defined.
  *  @param frame A coframe with respect to which the metric is defined; could be orthonormal or not.
  *  @param m The metric relative to the coframe
 */
-	PseudoRiemannianStructureByMatrix(const Manifold* manifold, const Frame& frame, const matrix& m) :
-		GStructure{manifold, frame}, PseudoRiemannianStructure(manifold,frame), scalar_product{frame, m} {}
+	static PseudoRiemannianStructureByMatrix FromMatrixOnFrame(const Manifold* manifold, const Frame& frame, const matrix& m) {
+		return PseudoRiemannianStructureByMatrix{manifold,frame,ScalarProductDefinedByMatrix::OnFrame(frame,m)};
+	}
+	static PseudoRiemannianStructureByMatrix FromMatrixOnCoframe(const Manifold* manifold, const Frame& frame, const matrix& m) {
+		return PseudoRiemannianStructureByMatrix{manifold,frame,ScalarProductDefinedByMatrix::OnCoframe(frame,m)};
+	}
+
 	const BilinearForm& ScalarProduct() const {return scalar_product;}
 
 	pair<ex,matrix> DecomposeRicci(matrix ricci) const override {throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByMatrix::DecomposeRicci");}

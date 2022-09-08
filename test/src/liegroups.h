@@ -29,9 +29,10 @@
 #include "wedge/liealgebras/liesubgroup.h"
 #include "wedge/liealgebras/so.h"
 #include "wedge/liealgebras/su.h"
+#include "wedge/liealgebras/derivations.h"
 #include "wedge/polynomialalgebra/cocoapolyalg.h"
 #include "wedge/polynomialalgebra/polybasis.h"
-
+#include "wedge/representations/gl.h"
 
 //test liegroup.h, subgroup.h, gl.h, so.h, su.h
 class LieGroupTestSuite : public CxxTest::TestSuite  {
@@ -326,6 +327,15 @@ public:
 
 	}
 
+	void testDerivations() {
+		AbstractLieGroup<> G("23,31,12");
+		GL gl(3);
+		auto der= derivations(G,gl);
+		TS_ASSERT_EQUALS(der.Dimension(),3);
+		TS_ASSERT(der.Contains(gl.A(1,2)-gl.A(2,1)));
+		TS_ASSERT(der.Contains(gl.A(3,2)-gl.A(2,3)));
+		TS_ASSERT(der.Contains(gl.A(1,3)-gl.A(3,1)));
+	}
 };
 
 

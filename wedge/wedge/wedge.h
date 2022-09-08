@@ -34,6 +34,7 @@
 #include "wedge/convenience/omitfunctionargument.h"
 #include "wedge/convenience/simplifier.h"
 #include "wedge/liealgebras/liegroupextension.h"
+#include "wedge/liealgebras/derivations.h"
 #include "wedge/liealgebras/liegroupstructures.h"
 #include "wedge/liealgebras/liesubgroup.h"
 #include "wedge/liealgebras/su.h"

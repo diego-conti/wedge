@@ -5,7 +5,7 @@ add_compile_definitions(IN_GINAC)
 add_compile_options(-g -O3 -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wsign-promo -Wchar-subscripts -Winit-self -Wmissing-braces -Wparentheses -Wreturn-type -Wswitch -Wtrigraphs -Wextra -Wno-sign-compare -Wno-narrowing -Wno-attributes)
 
 set(BASE_SRC wedge/base/normalform.cpp wedge/base/logging.cpp wedge/base/utilities.cpp  wedge/base/wexception.cpp wedge/base/wedgealgebraic.cpp wedge/base/utilities.cpp)
-set(CONNECTIONS_SRC wedge/connections/connection.cpp wedge/connections/transverseconnection.cpp)
+set(CONNECTIONS_SRC wedge/connections/connection.cpp wedge/connections/pseudolevicivita.cpp wedge/connections/transverseconnection.cpp)
 set(CONVENIENCE_SRC wedge/convenience/latex.cpp wedge/convenience/canonicalprint.cpp wedge/convenience/omitfunctionargument.cpp wedge/convenience/parse.cpp wedge/convenience/simplifier.cpp)
 set(LIE_ALGEBRAS_SRC  wedge/liealgebras/derivations.cpp wedge/liealgebras/liegroup.cpp wedge/liealgebras/liesubgroup.cpp)
 set(LINEARALGEBRA_SRC wedge/linearalgebra/bilinearform.cpp wedge/linearalgebra/ginaclinalg.cpp)

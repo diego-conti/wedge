@@ -38,4 +38,66 @@ pair<ex,matrix> StandardPseudoRiemannianStructure::DecomposeRicci(matrix ricci) 
 	return {normalized_s,ricci};
 }
 
+pair<ex,matrix> PseudoRiemannianStructureByOrthonormalFrame::DecomposeRicci(matrix ricci) const  {
+	throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByOrthonormalFrame::DecomposeRicci");
+}
+
+ex PseudoRiemannianStructureByOrthonormalFrame::u(ZeroBased n) const {
+	int m=M()->Dimension()/2;
+	if (n<0) throw OutOfRange(__FILE__,__LINE__,n);
+	vector<int> signs(m,1);
+	signs.reserve(m);
+	for (int i=0;i<m;++i, n/=2)
+		if (n%2) signs[m-i-1]=-1;	//take into account reversal
+	if (n!=0) throw OutOfRange(__FILE__,__LINE__,n);
+	return Spinor::from_epsilons(signs);
+}
+
+ex PseudoRiemannianStructureByOrthonormalFrame::u(const vector<int>& signs) const {
+	int m=M()->Dimension()/2;
+	if (signs.size()!=m) throw InvalidArgument(__FILE__,__LINE__,lst{list<ex>(signs.begin(),signs.end())});
+	return Spinor::from_epsilons(signs);
+}
+
+
+int PseudoRiemannianStructureByOrthonormalFrame::DimensionOfSpinorRepresentation() const
+{
+	return 1<<(M()->Dimension()/2);
+}
+
+class CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
+	Frame orthonormal_coframe;
+	ExVector taus;	//tau_k=i if e_k is timelike and 1 if spacelike
+
+	ex dot(OneBased j, const Spinor& spinor) const {
+		ex coeff=taus(j)*spinor.product_up_to(j/2);
+		if ((j-1)/2 %2) coeff=-coeff;
+		if (j%2) coeff*=I;
+		if (j==taus.size() && j%2==1)  return coeff*spinor;
+		else return coeff*spinor.reflect((j+1)/2);
+	}
+public:
+	CliffordProduct(const Frame& frame, const vector<int>& timelike_indices) : orthonormal_coframe{frame}, taus(frame.size(),1) {
+		//std::fill(taus.begin(),taus.end(),ex{1});
+		for (int i: timelike_indices)
+			taus(i)=I;		
+	}
+	ex Apply (const VectorField& X, const Spinor& spinor) const
+	{
+		ex result;		
+		for (int i=1;i<=orthonormal_coframe.size();++i) {
+			ex component = TrivialPairing<VectorField>(X,orthonormal_coframe(i));			
+			if (!component.is_zero())
+				result+=component*dot(i,spinor);
+		}
+		return result;
+	}	
+};
+
+
+ex PseudoRiemannianStructureByOrthonormalFrame::CliffordDot(ex X, ex psi) const {
+		CliffordProduct clifford{e(), scalar_product.TimelikeIndices()};
+		return CliffordProduct::BilinearOperator(X,psi,&clifford);
+}
+
 }

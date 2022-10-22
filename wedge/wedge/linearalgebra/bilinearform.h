@@ -185,6 +185,54 @@ protected:
 	}
 };
 
+/** @brief Pseudoriemannian scalar product represented by an orthonormal coframe, without assuming that the space-like elements come first in the orthonormal basis
+*/
+class ScalarProductByOrthonormalFrame : public BilinearFormWithFrame {
+	ExVector signs; 
+	ScalarProductByOrthonormalFrame(const Frame& frame, const ExVector& signs) : BilinearFormWithFrame(frame), signs{signs} {}
+public:
+/** @brief Define a Pseudoriemannian scalar product in terms of an orthonormal coframe
+* @param frame An orthonormal coframe
+* @param timelike_indices a sequence of one-based indices corresponding to timelike elements in the orthonormal coframe; if empty, the metric is positive definite
+*
+* The orthonormal frame e_1,..., e_n is assumed to satisfy <e_i,e_j>=-\delta_ij or \delta_ij according to whether i is in timelike_indices
+*/
+	static ScalarProductByOrthonormalFrame FromTimelikeIndices(const Frame& frame, const list<int>& timelike_indices) {
+		ExVector signs(frame.size());
+		std::fill(signs.begin(),signs.end(),1);
+		for (int i: timelike_indices)
+			signs(i)=-1;
+		return ScalarProductByOrthonormalFrame{frame,signs};		
+	}
+/** @brief Define a Pseudoriemannian scalar product in terms of an orthonormal coframe
+* @param frame An orthonormal coframe e_1,...,e_n
+* @param signs A sequence \epsilon_1,...,\epsilon_n, where each element is either 1 or -1
+*
+* The metric is taken to be of the form \epsilon_1 e^1\otimes e^1+...+\epsilon_n e^n\otimes e^n
+*/
+	static ScalarProductByOrthonormalFrame FromSequenceOfSigns(const Frame& frame, const vector<int>& signs) {
+		return ScalarProductByOrthonormalFrame{frame,ExVector{signs.begin(),signs.end()}};
+	}
+	/**
+   @brief Returns the list of timelike elements in the orthonormal frame
+   @return A list of one-based indices corresponding to timelike elements in the orthonormal frame
+ */
+	vector<int> TimelikeIndices() const {
+		vector<int> result;
+		for (int i=1;i<=signs.size();++i)
+			if (signs(i)<0) result.push_back(i);
+		return result;
+	}
+
+protected:
+	ex MatrixEntry(OneBased i, OneBased j) const override {
+		return i==j? signs(i) : 0;
+	}
+	ex InverseMatrixEntry(OneBased i, OneBased j) const override {
+		return i==j? signs(i) : 0;
+	}
+};
+
 
 /** @brief Neutral scalar product represented by a matrix of the form ((0 I) (I 0))
 */

@@ -12,7 +12,7 @@ include_directories(${GINAC_DIR} ${GINAC_DIR}/ginac ${CMAKE_SOURCE_DIR}/wedge ${
 set (CXXTESTFLAGS --error-printer)
 
 enable_testing()
-foreach(test  algebra base connections convenience coordinates functions lambda liegroups manifolds poly representations structures wedgealgebraic)
+foreach(test  algebra base connections convenience coordinates functions lambda liegroups manifolds metrics poly representations structures wedgealgebraic)
 	set (runner run${test}.cpp)
 	set (testdefinition ${test}.h)
 	add_executable(${test} ${runner} src/${testdefinition} src/test.h)

@@ -31,12 +31,16 @@
 #include "wedge/connections/torsionfreeconnection.h"
 
 namespace Wedge {
-	
+
+class CovariantDerivativeSpinor;
+
 /** @brief The Levi-Civita connection  on a pseudo riemannian manifold that (already) knows how to 
  * take d of its forms.*/  
-class PseudoLeviCivitaConnection : 
-	public virtual Connection, public TorsionFreeConnection<true>
-{
+class PseudoLeviCivitaConnection : public virtual Connection, public TorsionFreeConnection<true> {
+	struct Deleter {	//necessary to use unique_ptr with forward reference
+		void operator() (CovariantDerivativeSpinor* p);
+	};
+	unique_ptr<CovariantDerivativeSpinor,Deleter> covariant_derivative_spinor;
 public:
 /** @brief Construct the Levi-Civita connection
  *  @param manifold The manifold on which the connection is defined
@@ -47,43 +51,15 @@ public:
  * that it remains valid.
  * @exception WedgeException<std::logic_error> Thrown if manifold does not know how to take d of its forms
 */
-	PseudoLeviCivitaConnection(const Manifold* manifold, const PseudoRiemannianStructure& structure, const Name& christoffel=N.Gamma) : 
-		Connection(manifold,structure.e(),true), 
-		TorsionFreeConnection<true>(manifold,structure.e(),true,christoffel)
-	{
-		const int dimension=e().size();
-		components.reserve(dimension);
-		for (int i=0;i<dimension;i++)
-		components.push_back(exvector(dimension));
-
-		ExVector e_flat(dimension);	//i-th element represents ((e_i)^\flat))
-		ExVector frame=structure.e().dual();
-		for (int i=1;i<=dimension;++i)
-		for (int j=1;j<=dimension;++j)
-			e_flat(i)+=structure.ScalarProduct().OnVectors(frame(i),frame(j))*structure.e(j); 
-		LOG_INFO(e_flat);
-		exvector de;	//i-th element represents d((e_i)^\flat))
-		de.reserve(dimension);
-		for (int i=1;i<=dimension;++i)
-			de.push_back(manifold->d(e_flat(i)).normal());
-		for (int i=0;i<dimension;++i)
-		for (int j=0;j<dimension;++j)
-		for (int k=0;k<dimension;++k)
-		{
-
-		ex X=frame[i];
-		ex Y=frame[j]; 
-		ex Z=frame[k];
-		ex XYZ=TrivialPairing<DifferentialForm>(X*Y,-de[k])+
-				TrivialPairing<DifferentialForm>(Z*X,-de[j])+
-				TrivialPairing<DifferentialForm>(Z*Y,-de[i]);
-		for (int h=0;h<dimension;++h)
-			(*this)(h,j)+=(e()[i]*XYZ/2*structure.ScalarProduct().OnOneForms(e()[h],e()[k])).expand();
-
-		LOG_DEBUG((*this)(k,j));
-		}
+	PseudoLeviCivitaConnection(const Manifold* manifold, const PseudoRiemannianStructure& structure, const Name& christoffel=N.Gamma);
+	
+	template<typename Section> ex Nabla(ex X, ex alpha) const {
+		return Connection::Nabla<Section>(X,alpha);
 	}
 };
+
+template<> 
+ex PseudoLeviCivitaConnection::Nabla<Spinor>(ex X, ex psi) const;
 
 }
 

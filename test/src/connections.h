@@ -682,6 +682,18 @@ public:
 		TS_ASSERT_EQUALS(ricci, ricci_other_frame);
 
 	}
+
+	void testSpinors() {
+		S3 M;
+		auto g=PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
+		auto omega=PseudoLeviCivitaConnection{&M,g};
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(0)),1/ex(4)*g.CliffordDot(M.e(1),g.u(0)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(0)),1/ex(4)*g.CliffordDot(M.e(2),g.u(0)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(3),g.u(0)),1/ex(4)*g.CliffordDot(M.e(3),g.u(0)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(1)),1/ex(4)*g.CliffordDot(M.e(1),g.u(1)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(1)),1/ex(4)*g.CliffordDot(M.e(2),g.u(1)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(3),g.u(1)),1/ex(4)*g.CliffordDot(M.e(3),g.u(1)));
+	}
 };
 
 

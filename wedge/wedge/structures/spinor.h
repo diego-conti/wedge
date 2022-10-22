@@ -33,14 +33,14 @@ namespace Wedge {
 using namespace GiNaC;
 using namespace std;
 
-/** @brief The class representing a spinor field on a Riemannian spin manifold
+/** @brief The class representing a spinor field on a pseudo-Riemannian spin manifold
  * 
- * Since a Riemannian structure is represented by a choice of an orthonormal frame, spinors can be represented
- * accordingly in terms of a compatible basis of the complex spin representation. Objects of type Spinor represent
+ * This class works with pseudo-Riemanannian structures defined in terms of an orthonormal frame, @sa PseudoRiemannianStructureByOrthonormalFrame
+ * Spinors can be represented accordingly in terms of a compatible basis of the complex spin representation. Objects of type Spinor represent
  * elements of this basis.
  * 
- * Spinors are implemented as strings of bits, but their %internal structure is not directly accessible. Objects of type spinor 
- * are constructed by calling RiemannianStrucure::u; the class RiemannianStructure also implements Clifford multiplication. 
+ * Spinor objects should not be manipulated directly. Objects of type spinor should be constructed by calling RiemannianStrucure::u or PseudoRiemannianStructureByOrthonormalFrame::u.
+ * The classes RiemannianStructure and PseudoRiemannianStructureByOrthonormalFrame also implement Clifford multiplication. 
  */
 class Spinor : public Register<Spinor,Vector>::Algebraic
 {
@@ -49,12 +49,42 @@ class Spinor : public Register<Spinor,Vector>::Algebraic
 	Spinor(vector<bool> index);				
 public:
 	int compare_same_type(const basic &other) const;	
-	Spinor() {};
+	Spinor()=default;
+
+/** @brief Construct a spinor
+ * @param signs the sequence (\epsilon_1,\dotsc, \epsilon_m)
+ * @returns the spinor u(\epsilon_m,\dotsc, \epsilon_1) in the notation of 
+ * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups onPseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
+ * 
+ * Note the inversion in the order.
+ */
+	static Spinor from_epsilons(const vector<int>& signs) {
+		vector<bool> as_bools;
+		transform(signs.begin(),signs.end(), back_inserter(as_bools), [] (int x) {return x<0;});
+		return Spinor{as_bools};
+	}
+
 	unsigned return_type() const {return return_types::commutative;}
 	static const char* static_class_name() {return "Spinor";}
+/** @brief Invert an index
+ * @param j an index in the interval [1,m]
+ *  @return the spinor u(\epsilon_m,... , -\epsilon_j, ..., \epsilon_1)
+ */
+	Spinor reflect(OneBased j) const {
+		vector<bool> reversed=a;
+		reversed[j-1]=!reversed[j-1];
+		return Spinor{reversed};
+	}
+/** @brief Return the product of the first j signs
+ * @param j an index in the interval [1,m]
+ *  @return the product \epsilon_1,..., \epsilon_j
+ */
+	int product_up_to(OneBased j) const {
+		 return std::count(a.begin(),a.begin()+j,true)%2==0? 1: -1;
+	}
 private:
 	void print(const print_context &c, unsigned level) const;	///< Overloaded from basic::print
-	vector<bool> a;
+	vector<bool> a;	//true represents -1, false 1
 };
 
 

@@ -68,18 +68,24 @@ int PseudoRiemannianStructureByOrthonormalFrame::DimensionOfSpinorRepresentation
 class CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
 	Frame orthonormal_coframe;
 	ExVector taus;	//tau_k=i if e_k is timelike and 1 if spacelike
+	int s;	//the second element of the signature (r,s), i..e the number of taus that equal i
+
+	ex alpha_j(OneBased j) const {
+		if (j%2==0) return 1;
+		else if (j==orthonormal_coframe.size() && s%2) return -I;
+		else return I;
+	}
 
 	ex dot(OneBased j, const Spinor& spinor) const {
-		ex coeff=taus(j)*spinor.product_up_to(j/2);
-		if ((j-1)/2 %2) coeff=-coeff;
-		if (j%2) coeff*=I;
+		ex coeff=taus(j)*spinor.product_up_to(j/2)*alpha_j(j);
+		if (((j-1)/2)%2) coeff=-coeff;
 		if (j==taus.size() && j%2==1)  return coeff*spinor;
 		else return coeff*spinor.reflect((j+1)/2);
 	}
 public:
-	CliffordProduct(const Frame& frame, const vector<int>& timelike_indices) : orthonormal_coframe{frame}, taus(frame.size(),1) {
+	CliffordProduct(const Frame& frame, const vector<int>& timelike_indices) : orthonormal_coframe{frame}, taus(frame.size(),1), s{timelike_indices.size()} {
 		//std::fill(taus.begin(),taus.end(),ex{1});
-		for (int i: timelike_indices)
+		for (int i: timelike_indices) 
 			taus(i)=I;		
 	}
 	ex Apply (const VectorField& X, const Spinor& spinor) const

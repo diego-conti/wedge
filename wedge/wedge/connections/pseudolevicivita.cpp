@@ -8,8 +8,8 @@ class CovariantDerivativeSpinor: public IBilinearOperator<LinearOperator<VectorF
 	const PseudoLeviCivitaConnection& connection;
     ex double_clifford(ZeroBased i, ZeroBased j, ex psi) const {
         ex e_i=g.e()[i];
-        ex e_jflat=g.ScalarProduct().Sharp(g.e().dual()[j]);
-        return g.CliffordDot(e_i, g.CliffordDot(e_jflat,psi));
+        ex e_jsharp=g.ScalarProduct().Sharp(g.e().dual()[j]);
+        return g.CliffordDot(e_jsharp, g.CliffordDot(e_i,psi));
     }
 public:
 	CovariantDerivativeSpinor(const PseudoRiemannianStructureByOrthonormalFrame& g, const PseudoLeviCivitaConnection& c) : g{g}, connection(c) {}
@@ -18,7 +18,7 @@ public:
         for (int i=0;i<g.e().size();++i)
             for (int j=i+1;j<g.e().size();++j) 
                 res+=TrivialPairing<VectorField>(X,connection(i,j))*double_clifford(i,j,psi);
-        return -res/2;
+        return res/2;
     }
 	ex Apply(const VectorField& vfield, const Function& f) const {
     	return connection.Nabla<DifferentialForm>(vfield,f);	

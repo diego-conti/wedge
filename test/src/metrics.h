@@ -91,7 +91,7 @@ public:
 
 
 
-	void testCliffordRiemannian() {
+	void testCliffordRiemannianOdd() {
 		ConcreteManifold M(3);
 		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
 		auto dual=e.dual();
@@ -102,9 +102,10 @@ public:
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),-u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)),-u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)),-u);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d2,u))+g.CliffordDot(d2,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d2,u)),0);
+			for (auto X : dual)
+			for (auto Y : dual) {
+				if (X!=Y) TS_ASSERT_EQUALS(g.CliffordDot(X,g.CliffordDot(Y,u))+g.CliffordDot(Y,g.CliffordDot(X,u)),0);
+			}
 		}
 		auto timelikeindices=vector<int>{};
 		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);
@@ -120,9 +121,9 @@ public:
 			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)),-u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)),-u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d4,g.CliffordDot(d4,u)),-u);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d2,u))+g.CliffordDot(d2,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d2,u)),0);
+			for (auto X : M.e())
+			for (auto Y : M.e())
+				if (X!=Y) TS_ASSERT_EQUALS(g.CliffordDot(X,g.CliffordDot(Y,u))+g.CliffordDot(Y,g.CliffordDot(X,u)),0);
 		}
 		auto timelikeindices=vector<int>{};
 		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);
@@ -138,14 +139,13 @@ public:
 			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)),-u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)),u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d4,g.CliffordDot(d4,u)),-u);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d2,u))+g.CliffordDot(d2,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d2,u)),0);
+			for (auto X : M.e())
+			for (auto Y : M.e())
+				if (X!=Y) TS_ASSERT_EQUALS(g.CliffordDot(X,g.CliffordDot(Y,u))+g.CliffordDot(Y,g.CliffordDot(X,u)),0);
 		}
 		auto timelikeindices=vector<int>{1,3};
 		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);
-
-	}
+		}
 
 
 	void testCliffordIndefiniteOdd() {
@@ -159,9 +159,9 @@ public:
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)),-u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)),u);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d2,u))+g.CliffordDot(d2,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d1,u)),0);
-			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d3,u))+g.CliffordDot(d3,g.CliffordDot(d2,u)),0);
+			for (auto X : dual)
+			for (auto Y : dual)
+				if (X!=Y) TS_ASSERT_EQUALS(g.CliffordDot(X,g.CliffordDot(Y,u))+g.CliffordDot(Y,g.CliffordDot(X,u)),0);
 		}
 		auto timelikeindices=vector<int>{1,3};
 		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);

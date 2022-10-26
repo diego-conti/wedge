@@ -185,6 +185,7 @@ public:
   * @remark Clifford multiplication is implemented using the formulae of 
  * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups onPseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
   *  
+  * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2}
 */
 	ex CliffordDot(ex X, ex psi) const;
 /**

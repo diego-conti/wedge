@@ -36,22 +36,11 @@ namespace Wedge {
 
 class RiemannianStructure;
 
-namespace internal { 
-class RiemannianHookOperator : public IBilinearOperator<AssociativeOperator<DifferentialForm>,Derivation<DifferentialForm>  > 
-{
-	const RiemannianStructure* structure;
-public:
-	RiemannianHookOperator(const RiemannianStructure* s) {structure=s;} 
-	ex Apply(const VectorField& left,const VectorField& right) const;
-};
-
-}
 
 /** @brief Riemannian metric on a manifold, viewed as an O(n)-structure
  */
  
 class RiemannianStructure : public PseudoRiemannianStructureByOrthonormalFrame {
-	friend class internal::RiemannianHookOperator;	
 public:
 /** @brief Define a Riemannian structure on a manifold, represented by the choice of a frame
  *  @param manifold The manifold on which the structure is defined.
@@ -59,10 +48,7 @@ public:
  * 
  *  @warning Caller must ensure that the pointer remains valid.
  */ 
-	RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame) : 		
-		PseudoRiemannianStructureByOrthonormalFrame{manifold, orthonormal_frame, ScalarProductByOrthonormalFrame::FromTimelikeIndices(orthonormal_frame,{})},
-		hookOperator(this)
-	{}
+	RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame);
 
 /**
    @brief Compute the scalar product of two vector fields, differential forms or spinors
@@ -100,7 +86,11 @@ public:
 protected:
  	RiemannianStructure(const Manifold* manifold) : RiemannianStructure(manifold,manifold->e())  {throw 0;}
 private:
- 	internal::RiemannianHookOperator hookOperator;
+	class RiemannianHookOperator;
+	struct Deleter {
+  		void operator()(RiemannianHookOperator* r);    
+	};
+ 	unique_ptr<RiemannianHookOperator,Deleter> hookOperator;
 };
 
 template<> ex RiemannianStructure::ScalarProduct<VectorField> (ex op1, ex op2) const;

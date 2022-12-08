@@ -130,8 +130,7 @@ public:
 class PseudoRiemannianStructureByOrthonormalFrame : public PseudoRiemannianStructure {	
 	const ScalarProductByOrthonormalFrame scalar_product;
 protected:
-	PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product) :
-		PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)} {}
+	PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product);
 public:
 /** @brief 
  *  @param manifold The manifold on which the structure is defined.
@@ -201,6 +200,15 @@ public:
    @return The number \f$2^{[n/2]}\f$, where \f$n\f$ is the manifold's dimension
  */
 	int DimensionOfSpinorRepresentation() const;
+private:
+	class CliffordProduct;
+	class CliffordProductForm;
+	struct Deleter {
+  		void operator()(CliffordProduct* r);    
+  		void operator()(CliffordProductForm* r);    
+	};
+ 	unique_ptr<CliffordProduct,Deleter> clifford_product_operator;
+	unique_ptr<CliffordProductForm,Deleter> clifford_product_form_operator;
 };
 
 

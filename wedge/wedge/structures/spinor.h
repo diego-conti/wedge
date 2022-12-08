@@ -56,11 +56,7 @@ public:
  * 
  * Note the inversion in the order.
  */
-	static Spinor from_epsilons(const vector<int>& signs) {
-		vector<bool> as_bools;
-		transform(signs.begin(),signs.end(), back_inserter(as_bools), [] (int x) {return x<0;});
-		return Spinor{as_bools};
-	}
+	static Spinor from_epsilons(const vector<int>& signs);
 
 /**
    @brief Returns the n-th element of a global basis of complex spinors
@@ -68,16 +64,7 @@ public:
    @param dimension The dimension of the manifold
    @return The spinor \f$ u(\epsilon_m,\dots,\epsilon_1)\f$ where m=[dimension/2] and \epsilon_i=1 if the i-th least significant digit in base 2 of n is 0 and -1 otherwise
 */
-	static Spinor from_index_and_dimension(ZeroBased n, int dimension) {
-		auto oldn=n;
-		int m=dimension/2;
-		if (n<0) throw OutOfRange(__FILE__,__LINE__,n);
-		vector<int> signs(m,1);		
-		for (int i=0;i<m;++i, n/=2)
-			if (n%2) signs[m-i-1]=-1;	//take into account reversal
-		if (n!=0) throw OutOfRange(__FILE__,__LINE__,oldn);
-		return Spinor::from_epsilons(signs);
-	}
+	static Spinor from_index_and_dimension(ZeroBased n, int dimension);
 
 	unsigned return_type() const {return return_types::commutative;}
 	static const char* static_class_name() {return "Spinor";}

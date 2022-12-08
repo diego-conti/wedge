@@ -23,6 +23,25 @@
 
 namespace Wedge {
 
+
+class RiemannianStructure::RiemannianHookOperator : public IBilinearOperator<AssociativeOperator<DifferentialForm>,Derivation<DifferentialForm>  > 
+{
+	const RiemannianStructure* structure;
+public:
+	RiemannianHookOperator(const RiemannianStructure* s) {structure=s;} 
+	ex Apply(const VectorField& left,const VectorField& right) const 	{
+		return structure->ScalarProduct().OnOneForms(left,right);
+	}
+};
+void RiemannianStructure::Deleter::operator()(RiemannianHookOperator* r) {
+	delete r;
+}
+
+RiemannianStructure::RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame) : 		
+	PseudoRiemannianStructureByOrthonormalFrame{manifold, orthonormal_frame, ScalarProductByOrthonormalFrame::FromTimelikeIndices(orthonormal_frame,{})},
+	hookOperator{new RiemannianHookOperator(this)}
+{}
+
 ex RiemannianStructure::HodgeStar(ex form1) const
 {
 	ex form=e()[0];
@@ -33,7 +52,7 @@ ex RiemannianStructure::HodgeStar(ex form1) const
 
 ex RiemannianStructure::Hook(ex left, ex right) const
 {
-	ex result=internal::RiemannianHookOperator::BilinearOperator(left.expand(),right.expand(),&hookOperator).expand();
+	ex result=RiemannianHookOperator::BilinearOperator(left.expand(),right.expand(),hookOperator.get()).expand();
 		//adjust sign so that e^{12..n}\hook e^{12..n}=1
 	return (Degree<DifferentialForm>(left) % 4<2)? result : -result;
 }	
@@ -47,13 +66,6 @@ template<> ex RiemannianStructure::ScalarProduct<DifferentialForm> (ex op1, ex o
 
 template<> ex RiemannianStructure::ScalarProduct<Spinor> (ex op1, ex op2) const {
 	return RealPart(TrivialPairing<Spinor>(op1,op2.conjugate()));
-}
-
-namespace internal {
-ex RiemannianHookOperator::Apply(const VectorField& left,const VectorField& right) const
-{
-	return structure->ScalarProduct().OnOneForms(left,right);
-}
 }
 
 }

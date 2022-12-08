@@ -212,6 +212,31 @@ public:
 		TS_ASSERT_THROWS(g.u(vector<int>{1}),InvalidArgument);
 		TS_ASSERT_THROWS(g.u({1,1}),InvalidArgument);
 	}
+
+	void testVolume3() {
+		ConcreteManifold M3(3), M5(5),M7(7);
+		do_test_volume(M3);
+		//do_test_volume(M5);
+		//do_test_volume(M7);
+	}
+private:
+	//product by a sequence of vectors
+	ex clifford(exvector e, ex u, const PseudoRiemannianStructureByOrthonormalFrame& g) {
+		for (auto i=e.rbegin();i!=e.rend();++i)
+			u=g.CliffordDot(*i,u);
+		return u;
+	}
+	
+	void do_test_volume(const Manifold& M) {		
+		for (int r=0;r<=M.Dimension();++r) {
+			int s=M.Dimension()-r;
+			vector<int> timelike;
+			for (int k=1;k<=s;++k) timelike.push_back(k);
+			auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),timelike);
+			for (auto u : {g.u(0),g.u(1)})
+				TS_ASSERT_EQUALS(clifford(M.e(),u,g),pow(I,(r-s+1)/2)*u);
+		}
+	}
 };
 
 

@@ -195,6 +195,8 @@ Removed:
   AbstractLieGroup constructors now accept strings as well as string literals 
   LieGroup::canonical_print returns reference to ostream
   ParseDifferentialForms now accepts letters a-z and A-Z for dimensions up to 61, and throws ParseError on out-of-bounds errors.
-  Named constructor idiom is now used in PseudoRiemannianStructureByMatrix to prevent ambiguity
+  Named constructor idiom is now used in PseudoRiemannianStructureByMatrix to prevent ambiguity  
+  Updated to GiNaC 1.8.4  
 Added:
- function derivations
+  Function derivations
+  PseudoRiemannianStructure now supports spinors

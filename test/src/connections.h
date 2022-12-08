@@ -44,63 +44,68 @@ class RiemannianTestSuite : public CxxTest::TestSuite
 public:
 	class RiemannianManifold: public ConcreteManifold
 	{
-	public:
-		RiemannianStructure structure;
-		RiemannianManifold() : ConcreteManifold(5), structure(this,ExVector(e())) {}
+	public:		
+		unique_ptr<RiemannianStructure> structure;		
+		RiemannianManifold() : ConcreteManifold(5), structure{make_unique<RiemannianStructure>(this,e())} {
+		}
+		void change_structure(const ExVector& newframe) {
+			structure=make_unique<RiemannianStructure>(this,newframe);
+		}
 		void MetricTest() {			
-			TS_ASSERT_EQUALS(structure.DimensionOfSpinorRepresentation(),4);
-			TS_ASSERT_EQUALS(structure.ScalarProduct<DifferentialForm>(structure.e(1),structure.e(1)),1);
+			TS_ASSERT_EQUALS(structure->DimensionOfSpinorRepresentation(),4);
+			TS_ASSERT_EQUALS(structure->ScalarProduct<DifferentialForm>(structure->e(1),structure->e(1)),1);
 						
-			TS_ASSERT_EQUALS(structure.ScalarProduct<DifferentialForm>(
-					structure.e(1)+3*structure.e(2)+5*structure.e(3),
-					structure.e(2)-2*structure.e(3)-4*structure.e(4)
+			TS_ASSERT_EQUALS(structure->ScalarProduct<DifferentialForm>(
+					structure->e(1)+3*structure->e(2)+5*structure->e(3),
+					structure->e(2)-2*structure->e(3)-4*structure->e(4)
 				), 3-10);
-			TS_ASSERT_EQUALS(structure.ScalarProduct<DifferentialForm>(
-					structure.e(1)*structure.e(2),
-					structure.e(2)*structure.e(1)
+			TS_ASSERT_EQUALS(structure->ScalarProduct<DifferentialForm>(
+					structure->e(1)*structure->e(2),
+					structure->e(2)*structure->e(1)
 				), -1);
 				
-			TS_ASSERT_EQUALS(structure.SquareNorm<DifferentialForm>(structure.e(1)*structure.e(2)),1);
-			TS_ASSERT_EQUALS(structure.SquareNorm<DifferentialForm>(ParseDifferentialForm(structure.e(),"123+145")),2);		
+			TS_ASSERT_EQUALS(structure->SquareNorm<DifferentialForm>(structure->e(1)*structure->e(2)),1);
+			TS_ASSERT_EQUALS(structure->SquareNorm<DifferentialForm>(ParseDifferentialForm(structure->e(),"123+145")),2);		
 				
-			TS_ASSERT_EQUALS(structure.ScalarProduct<Spinor>(
-					structure.u(1)+3*structure.u(2)+I*5*structure.u(3),
-					I*structure.u(2)+2*I*structure.u(3)-4*structure.u(4)
+			TS_ASSERT_EQUALS(structure->ScalarProduct<Spinor>(
+					structure->u(0)+3*structure->u(1)+I*5*structure->u(2),
+					I*structure->u(1)+2*I*structure->u(2)-4*structure->u(3)
 				), 10);			
 
-			TS_ASSERT_EQUALS(structure.HodgeStar(structure.e(1)*structure.e(4)*structure.e(5)),structure.e(2)*structure.e(3));
-			TS_ASSERT_EQUALS(structure.HodgeStar(structure.e(3)*structure.e(5)),-structure.e(1)*structure.e(2)*structure.e(4));
-			TS_ASSERT_EQUALS(structure.ScalarProduct<Spinor>(structure.u(0),structure.u(1)),0);
-			TS_ASSERT_EQUALS(structure.ScalarProduct<Spinor>(structure.u(0)-structure.u(1),structure.u(1)),-1);
-			TS_ASSERT_EQUALS(structure.SquareNorm<Spinor>(structure.u(0)+I*structure.u(1)),2);
-			TS_ASSERT_EQUALS(structure.SquareNorm<DifferentialForm>(structure.e(1)-2*structure.e(2)),5);
-			TS_ASSERT_EQUALS(structure.Hook(structure.e(1)+structure.e(2),structure.e(1)*structure.e(2)),structure.e(2)-structure.e(1));
+			TS_ASSERT_EQUALS(structure->HodgeStar(structure->e(1)*structure->e(4)*structure->e(5)),structure->e(2)*structure->e(3));
+			TS_ASSERT_EQUALS(structure->HodgeStar(structure->e(3)*structure->e(5)),-structure->e(1)*structure->e(2)*structure->e(4));
+			TS_ASSERT_EQUALS(structure->ScalarProduct<Spinor>(structure->u(0),structure->u(1)),0);
+			TS_ASSERT_EQUALS(structure->ScalarProduct<Spinor>(structure->u(0)-structure->u(1),structure->u(1)),-1);
+			TS_ASSERT_EQUALS(structure->SquareNorm<Spinor>(structure->u(0)+I*structure->u(1)),2);
+			TS_ASSERT_EQUALS(structure->SquareNorm<DifferentialForm>(structure->e(1)-2*structure->e(2)),5);
+			TS_ASSERT_EQUALS(structure->Hook(structure->e(1)+structure->e(2),structure->e(1)*structure->e(2)),structure->e(2)-structure->e(1));
 
-			exvector dual=structure.e().dual();	//vector fields
+			exvector dual=structure->e().dual();	//vector fields
 			for (exvector::const_iterator i=dual.begin();i!=dual.end();++i)
 			for (exvector::const_iterator j=dual.begin();j!=dual.end();++j)
 				if (i==j) {
-					TS_ASSERT_EQUALS(structure.ScalarProduct<VectorField>(*i,*j),1);
+					TS_ASSERT_EQUALS(structure->ScalarProduct<VectorField>(*i,*j),1);
 				}
 				else {
-					TS_ASSERT_EQUALS(structure.ScalarProduct<VectorField>(*i,*j),0);
+					TS_ASSERT_EQUALS(structure->ScalarProduct<VectorField>(*i,*j),0);
 				}
 		}
 
 		void CliffordTest() {
-			TS_ASSERT_EQUALS(structure.CliffordDot(structure.e(1),
-								structure.CliffordDot(structure.e(2),structure.u(0))),
-								structure.CliffordDot(structure.e(1)*structure.e(2),structure.u(0)));
+			TS_ASSERT_EQUALS(structure->CliffordDot(structure->e(1),
+								structure->CliffordDot(structure->e(2),structure->u(0))),
+								structure->CliffordDotByForm(structure->e().dual()(1)*structure->e().dual()(2),structure->u(0)));
 			
 			for (int i=1;i<=Dimension();i++)
 				for (int j=1;j<=Dimension();j++)
-					for (int k=0;k<structure.DimensionOfSpinorRepresentation();k++) {
-				LOG_DEBUG(e(i)<<"*"<<structure.u(k)<<"="<<structure.CliffordDot(e(i),structure.u(k)));
-				ex ijk=structure.CliffordDot(structure.e(i),structure.CliffordDot(e(j),I*structure.u(k)));
-				ex ijk2=structure.CliffordDot(structure.e(i)*structure.e(j),I*structure.u(k));
+					for (int k=0;k<structure->DimensionOfSpinorRepresentation();k++) {
+				LOG_DEBUG(e(i)<<"*"<<structure->u(k)<<"="<<structure->CliffordDot(e(i),structure->u(k)));
+				ex ijk=structure->CliffordDot(structure->e(i),structure->CliffordDot(e(j),I*structure->u(k)));
+				ex e_ie_j=structure->e().dual()(i)*structure->e().dual()(j);	//two-form e^i\wedge e^j
+				ex ijk2=structure->CliffordDotByForm(e_ie_j,I*structure->u(k));
 				if (i!=j) TS_ASSERT_EQUALS(ijk,ijk2);
-				ex jik=structure.CliffordDot(structure.e(j),structure.CliffordDot(structure.e(i),I*structure.u(k)));
-				TS_ASSERT_EQUALS(ijk+jik,i==j?-2*I*structure.u(k):0);
+				ex jik=structure->CliffordDot(structure->e(j),structure->CliffordDot(structure->e(i),I*structure->u(k)));
+				TS_ASSERT_EQUALS(ijk+jik,i==j?-2*I*structure->u(k):0);
 					}
 		}
 	};		
@@ -116,10 +121,9 @@ public:
 		e(3)=M.e(3)+e(2);
 		e(4)=M.e(4)+e(3);
 		e(5)=M.e(5)+e(4);
-		RiemannianStructure g(&M,e);
-		M.structure=g;
-		TS_ASSERT_EQUALS(M.structure.e(1),e(1));
-		TS_ASSERT_EQUALS(M.structure.e(5),e(5));
+		M.change_structure(e);
+		TS_ASSERT_EQUALS(M.structure->e(1),e(1));
+		TS_ASSERT_EQUALS(M.structure->e(5),e(5));
 		M.MetricTest();
 	      //M.CliffordTest();	//fails due to a bug in CliffordDot (see documentation of CliffordDot)
 	}
@@ -683,16 +687,17 @@ public:
 
 	}
 
+	//the Killing constant depends on conventions
 	void testSpinors() {
 		S3 M;
 		auto g=PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
 		auto omega=PseudoLeviCivitaConnection{&M,g};
-		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(0)),1/ex(4)*g.CliffordDot(M.e(1),g.u(0)));
-		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(0)),1/ex(4)*g.CliffordDot(M.e(2),g.u(0)));
-		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(3),g.u(0)),1/ex(4)*g.CliffordDot(M.e(3),g.u(0)));
-		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(1)),1/ex(4)*g.CliffordDot(M.e(1),g.u(1)));
-		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(1)),1/ex(4)*g.CliffordDot(M.e(2),g.u(1)));
-		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(3),g.u(1)),1/ex(4)*g.CliffordDot(M.e(3),g.u(1)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(0)),-1/ex(4)*g.CliffordDot(M.e(1),g.u(0)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(0)),-1/ex(4)*g.CliffordDot(M.e(2),g.u(0)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(3),g.u(0)),-1/ex(4)*g.CliffordDot(M.e(3),g.u(0)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(1)),-1/ex(4)*g.CliffordDot(M.e(1),g.u(1)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(1)),-1/ex(4)*g.CliffordDot(M.e(2),g.u(1)));
+		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(3),g.u(1)),-1/ex(4)*g.CliffordDot(M.e(3),g.u(1)));
 	}
 };
 

@@ -46,24 +46,27 @@ public:
 		{
 			ConcreteManifold M(6);
 			Frame e=M.e();
-			SU3Structure P(&M,e);
-			TS_ASSERT_EQUALS((P.psiplus()*P.omega()).expand(),0);
-			TS_ASSERT_EQUALS((P.psiminus()*P.omega()).expand(),0);
-			TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),(P.omega()*P.omega()*P.omega()/6).expand());
-			TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),ParseDifferentialForm(e,"123456"));
-			TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiplus()),4);
-			TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiminus()),4);
-			TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.omega()),3);
-
+			{
+				SU3Structure P(&M,e);
+				TS_ASSERT_EQUALS((P.psiplus()*P.omega()).expand(),0);
+				TS_ASSERT_EQUALS((P.psiminus()*P.omega()).expand(),0);
+				TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),(P.omega()*P.omega()*P.omega()/6).expand());
+				TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),ParseDifferentialForm(e,"123456"));
+				TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiplus()),4);
+				TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiminus()),4);
+				TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.omega()),3);
+			}
 			e=ParseDifferentialForms(e,"1+2,1+3,1+4,1+5,1+6,6");
-			P=SU3Structure (&M,e);
-			TS_ASSERT_EQUALS((P.psiplus()*P.omega()).expand(),0);
-			TS_ASSERT_EQUALS((P.psiminus()*P.omega()).expand(),0);
-			TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),(P.omega()*P.omega()*P.omega()/6).expand());
-			TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),ParseDifferentialForm(e,"123456").expand());
-			TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiplus()),4);
-			TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiminus()),4);
-			TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.omega()),3);
+			{
+				auto P=SU3Structure (&M,e);
+				TS_ASSERT_EQUALS((P.psiplus()*P.omega()).expand(),0);
+				TS_ASSERT_EQUALS((P.psiminus()*P.omega()).expand(),0);
+				TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),(P.omega()*P.omega()*P.omega()/6).expand());
+				TS_ASSERT_EQUALS((P.psiplus()*P.psiminus()/4).expand(),ParseDifferentialForm(e,"123456").expand());
+				TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiplus()),4);
+				TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.psiminus()),4);
+				TS_ASSERT_EQUALS(P.SquareNorm<DifferentialForm>(P.omega()),3);
+			}
 		}
 		{
 			ConcreteManifold M(8);
@@ -103,73 +106,75 @@ public:
 
 
 			e=ParseDifferentialForms(e,"1+2,1+3,1+4,1+5,1+6,6,7,8");
-			P=PSU3Structure (&M,e);
-
-			V=P.LambdaComponent(PSU3Structure::Lambda_2_8);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
-			V=P.LambdaComponent(PSU3Structure::Lambda_3_8);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
-			V=P.LambdaComponent(PSU3Structure::Lambda_4_8Plus);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
-			V=P.LambdaComponent(PSU3Structure::Lambda_4_8Minus);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
-			V=P.LambdaComponent(PSU3Structure::Lambda_6_8);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
-
-			V=P.LambdaComponent(PSU3Structure::Lambda_2_20);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),20);
-			V=P.LambdaComponent(PSU3Structure::Lambda_3_20);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),20);
-				//verify that the map \[[T\otimes\Lambda^3_{20}\to\Lambda^2\] induced by interior product is surjective.
-			Two.clear();
-			for (int j=1;j<=V.Dimension();j++)
-				for (int i=1;i<=8;i++)
-				{
-					Two.push_back(Hook(M.e(i),V.e(j)));
-				}
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(Two).Dimension(),28);
-
-			V=P.LambdaComponent(PSU3Structure::Lambda_6_20);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),20);
-
-			V=P.LambdaComponent(PSU3Structure::Lambda_4_27Plus);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),27);
-			V=P.LambdaComponent(PSU3Structure::Lambda_4_27Minus);
-			TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),27);
-
-			matrix g=PSU3Structure::Metric(M,P.phi());
-			Frame x=P.e().dual();
-			TS_ASSERT_EQUALS(g.rows(),8);
-			TS_ASSERT_EQUALS(g.cols(),8);
-			ex conformalfactor;
-			for (int i=0;i<8;i++)
-				for (int j=0;j<8;j++)
-				{
-					exvector v=x.Components(M.e()[i]),w=x.Components(M.e()[j]);
-					ex gij;
-					for (int k=0;k<8;k++) gij+=v[k]*w[k];
-					if (g(i,j).is_zero()) {
-						TS_ASSERT(gij.is_zero());
-					}
-					else {
-						if (conformalfactor.is_zero()) conformalfactor=gij/g(i,j);
-						else TS_ASSERT_EQUALS(conformalfactor,gij/g(i,j));
-					}
-				}
-
-			for (int i=0;i<8;i++)
 			{
-				ex ei=M.e()[i];
-			//verify that the sigma's are right inverses of the pi's
-				TS_ASSERT_EQUALS(P.PiZero(P.SigmaZero(ei)),ei);
-				TS_ASSERT_EQUALS(P.PiPlus(P.SigmaPlus(ei)),ei);
-				TS_ASSERT_EQUALS(P.PiMinus(P.SigmaMinus(ei)),ei);
-				//verify that the sigma's take values in the spaces they are supposed to
-				LOG_INFO(P.LambdaComponent(PSU3Structure::Lambda_4_8Minus));
-				LOG_INFO(P.SigmaMinus(ei));
-				TS_ASSERT(P.LambdaComponent(PSU3Structure::Lambda_4_8Minus).Contains(P.SigmaMinus(ei)));
-				TS_ASSERT(P.LambdaComponent(PSU3Structure::Lambda_4_8Plus).Contains(P.SigmaPlus(ei)));
-				TS_ASSERT(P.LambdaComponent(PSU3Structure::Lambda_6_8).Contains(P.SigmaZero(ei)));
+				auto P=PSU3Structure (&M,e);
+
+				V=P.LambdaComponent(PSU3Structure::Lambda_2_8);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
+				V=P.LambdaComponent(PSU3Structure::Lambda_3_8);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
+				V=P.LambdaComponent(PSU3Structure::Lambda_4_8Plus);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
+				V=P.LambdaComponent(PSU3Structure::Lambda_4_8Minus);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
+				V=P.LambdaComponent(PSU3Structure::Lambda_6_8);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),8);
+
+				V=P.LambdaComponent(PSU3Structure::Lambda_2_20);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),20);
+				V=P.LambdaComponent(PSU3Structure::Lambda_3_20);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),20);
+					//verify that the map \[[T\otimes\Lambda^3_{20}\to\Lambda^2\] induced by interior product is surjective.
+				Two.clear();
+				for (int j=1;j<=V.Dimension();j++)
+					for (int i=1;i<=8;i++)
+					{
+						Two.push_back(Hook(M.e(i),V.e(j)));
+					}
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(Two).Dimension(),28);
+
+				V=P.LambdaComponent(PSU3Structure::Lambda_6_20);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),20);
+
+				V=P.LambdaComponent(PSU3Structure::Lambda_4_27Plus);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),27);
+				V=P.LambdaComponent(PSU3Structure::Lambda_4_27Minus);
+				TS_ASSERT_EQUALS(VectorSpace<DifferentialForm>(V.e_begin(),V.e_end()).Dimension(),27);
+
+				matrix g=PSU3Structure::Metric(M,P.phi());
+				Frame x=P.e().dual();
+				TS_ASSERT_EQUALS(g.rows(),8);
+				TS_ASSERT_EQUALS(g.cols(),8);
+				ex conformalfactor;
+				for (int i=0;i<8;i++)
+					for (int j=0;j<8;j++)
+					{
+						exvector v=x.Components(M.e()[i]),w=x.Components(M.e()[j]);
+						ex gij;
+						for (int k=0;k<8;k++) gij+=v[k]*w[k];
+						if (g(i,j).is_zero()) {
+							TS_ASSERT(gij.is_zero());
+						}
+						else {
+							if (conformalfactor.is_zero()) conformalfactor=gij/g(i,j);
+							else TS_ASSERT_EQUALS(conformalfactor,gij/g(i,j));
+						}
+					}
+
+				for (int i=0;i<8;i++)
+				{
+					ex ei=M.e()[i];
+				//verify that the sigma's are right inverses of the pi's
+					TS_ASSERT_EQUALS(P.PiZero(P.SigmaZero(ei)),ei);
+					TS_ASSERT_EQUALS(P.PiPlus(P.SigmaPlus(ei)),ei);
+					TS_ASSERT_EQUALS(P.PiMinus(P.SigmaMinus(ei)),ei);
+					//verify that the sigma's take values in the spaces they are supposed to
+					LOG_INFO(P.LambdaComponent(PSU3Structure::Lambda_4_8Minus));
+					LOG_INFO(P.SigmaMinus(ei));
+					TS_ASSERT(P.LambdaComponent(PSU3Structure::Lambda_4_8Minus).Contains(P.SigmaMinus(ei)));
+					TS_ASSERT(P.LambdaComponent(PSU3Structure::Lambda_4_8Plus).Contains(P.SigmaPlus(ei)));
+					TS_ASSERT(P.LambdaComponent(PSU3Structure::Lambda_6_8).Contains(P.SigmaZero(ei)));
+				}
 			}
 		}
 	}
@@ -214,14 +219,15 @@ public:
 	}
 
 	class StructureWithParameters : public SU3, public GStructureHasParameters<PSU3Structure,true> {
-	public:
-		StructureWithParameters() :  GStructureHasParameters<PSU3Structure,true>(this)
-		{
+		ExVector frame() const {
 			ExVector e=ParseDifferentialForms(SU3::e(),"1,6,7,5,4,2,3,8");
 			for (int i=2;i<=8;i++)
 				e(1)+=GStructureParameter("x"+ToString(i))*e(i);
-			SetFrame(e);
+			return e;
 		}
+	public:
+		StructureWithParameters() :  GStructureHasParameters<PSU3Structure,true>{this,frame()} {}
+
 	};
 //structures.h; test PSU3-structures with parameters
 	void testStructureWParams()

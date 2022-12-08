@@ -39,7 +39,7 @@ void TransverseRiemannianStructure::Reduce(const Simplifier& simplifier) {
 	ReduceSubstitutions(verticalf,simplifier);
 }
 
-TransverseRiemannianStructure::TransverseRiemannianStructure(const Manifold* M, const Frame& coframe, int _k) : GStructure{M,coframe}, StandardPseudoRiemannianStructure{M,coframe,M->Dimension()}, k{_k} {
+TransverseRiemannianStructure::TransverseRiemannianStructure(const Manifold* M, const Frame& coframe, int _k) : StandardPseudoRiemannianStructure{M,coframe,M->Dimension()}, k{_k} {
 	LOG_INFO(k);
 	LOG_INFO(e());
 	Frame frame=e().dual();

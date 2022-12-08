@@ -23,17 +23,6 @@
 
 namespace Wedge {
 
-Spinor::Spinor(unsigned index, int dimension)
-{
-	a.reserve(dimension);
-	//convert index to binary representation; least significant digit goes first.
-	for (int i=0;i<dimension;i++) {
-		a.push_back((index%2)!=0);
-		index/=2;
-	}
-	if (index!=0) throw OutOfRange(__FILE__,__LINE__);
-}
-
 Spinor::Spinor(vector<bool> index)
 {
 	this->a=index;
@@ -52,7 +41,7 @@ int Spinor::compare_same_type(const basic &other) const
 
 void Spinor::print(const print_context &c, unsigned level) const {
 	int index=0;
-	for (vector<bool>::const_reverse_iterator i=a.rbegin();i!=a.rend();i++) index=*i? index*2+1:index*2;
+	for (auto i=a.begin();i!=a.end();i++) index=*i? index*2+1:index*2;
 	if (dynamic_cast<const GiNaC::print_latex*>(&c))
 		c.s<<"u_{"<<index<<"}";
 	else

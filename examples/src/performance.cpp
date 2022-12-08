@@ -357,8 +357,8 @@ struct ConnectionTest2 {
 
 
 struct LeviCivitaConnectionTest : public ConcreteManifold, public Has_dTable {
-	RiemannianStructure g;
-	LeviCivitaConnectionTest(int N) : ConcreteManifold(N) , g(this,e()) {
+	unique_ptr<RiemannianStructure> g;
+	LeviCivitaConnectionTest(int N) : ConcreteManifold(N) {
 		for (int i=1;i<=N;++i) 
 			Declare_d(e(i),e()[rand()%N]*e()[rand()%N]);
 		ExVector f=e();
@@ -366,10 +366,10 @@ struct LeviCivitaConnectionTest : public ConcreteManifold, public Has_dTable {
 			int k=i+1+rand()%(N-i);
 			f(i)+=(rand()%10)*e(k);
 		}
-		g=RiemannianStructure(this,f);
+		g=make_unique<RiemannianStructure>(this,f);
 	}	
 	void run() {
-		LeviCivitaConnection<true>(this,g);
+		LeviCivitaConnection<true>(this,*g);
 	}
 };
 

@@ -40,7 +40,7 @@ namespace Wedge {
  * This is an abstract base class
  */
  
-class PseudoRiemannianStructure : public virtual GStructure
+class PseudoRiemannianStructure : public GStructure
 {
 	ex Hook(ex) const = delete;	//Not implemented. Use ScalarProduct().Interior() instead.
 public:
@@ -92,7 +92,7 @@ public:
  * The orthonormal frame e_1,..., e_n is assumed to satisfy <e_i,e_j>=\delta_{ij} for i\leq p, -\delta_{ij} for i>p
 */
 	StandardPseudoRiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame, int p) : 
-		GStructure{manifold, orthonormal_frame}, PseudoRiemannianStructure(manifold,orthonormal_frame), p_{p}, scalar_product{orthonormal_frame,p} {}
+		PseudoRiemannianStructure(manifold,orthonormal_frame), p_{p}, scalar_product{orthonormal_frame,p} {}
 	const BilinearForm& ScalarProduct() const {return scalar_product;}
 
 	pair<ex,matrix> DecomposeRicci(matrix ricci) const override;
@@ -105,7 +105,7 @@ public:
 class PseudoRiemannianStructureByMatrix : public PseudoRiemannianStructure {
 	const ScalarProductDefinedByMatrix scalar_product;
 	PseudoRiemannianStructureByMatrix(const Manifold* manifold, const Frame& frame, ScalarProductDefinedByMatrix&& scalar_product) :
-		GStructure{manifold, frame}, PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)} {}
+		PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)} {}
 public:
 /** @brief
  *  @param manifold The manifold on which the structure is defined.
@@ -129,8 +129,9 @@ public:
  
 class PseudoRiemannianStructureByOrthonormalFrame : public PseudoRiemannianStructure {	
 	const ScalarProductByOrthonormalFrame scalar_product;
+protected:
 	PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product) :
-		GStructure{manifold, frame}, PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)} {}
+		PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)} {}
 public:
 /** @brief 
  *  @param manifold The manifold on which the structure is defined.
@@ -183,11 +184,18 @@ public:
  * @return The spinor \f$ X\cdot\psi\f$.
 	 
   * @remark Clifford multiplication is implemented using the formulae of 
- * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups onPseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
+ * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
   *  
   * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2}
 */
 	ex CliffordDot(ex X, ex psi) const;
+
+/** @brief Compute the Clifford action of a vector field on a spinor
+ * @param alpha a differential form 
+ * @param psi A spinor
+ * @return The spinor \f$ alpha\cdot\psi\f$.
+*/
+	ex CliffordDotByForm(ex alpha, ex psi) const;
 /**
    @brief Returns the rank of the complex spinor bundle
    @return The number \f$2^{[n/2]}\f$, where \f$n\f$ is the manifold's dimension

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by Diego Conti, diego.conti@unimib.it  *
+ *   Copyright (C) 2007, 2008, 2009 by Diego Conti, diego.conti@unipi.it  *
  *                                                                         *
  *   This file is part of Wedge.                                           *
  *                                                                         *

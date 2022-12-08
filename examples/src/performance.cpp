@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C)2009 by Diego Conti					   *
- *   diego.conti@unimib.it                                                 *
+ *   diego.conti@unipi.it                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *

@@ -1,5 +1,5 @@
 /*******************************************************************************
- *  Copyright (C) 2007-2022 by Diego Conti, diego.conti@unimib.it 
+ *  Copyright (C) 2007-2022 by Diego Conti, diego.conti@unipi.it 
  *  This file is part of Wedge.                                           
  *  Wedge is free software; you can redistribute it and/or modify         
  *  it under the terms of the GNU General Public License as published by  
@@ -31,7 +31,7 @@
 using namespace Wedge;
 using namespace GiNaC;
 /**
-	@author Diego Conti <diego.conti@unimib.it>
+	@author Diego Conti <diego.conti@unipi.it>
 	@brief Test suite for the Base module in %Wedge
 		
 */

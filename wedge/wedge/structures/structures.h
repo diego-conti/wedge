@@ -53,10 +53,6 @@ public:
 	ex omega() const;	///< The almost-symplectic two-form
 	ex psiplus() const; ///< The real part of the complex volume form
 	ex psiminus() const;///< The imaginary part of the complex volume form
-protected:
-/** @copydoc GStructure::GStructure(const Manifold*)
- */
-	SU3Structure(const Manifold* manifold) : RiemannianStructure(manifold) {}
 };
 
 template<> IntrinsicTorsion GStructureHasParameters<SU3Structure,false>::GetIntrinsicTorsion() const;
@@ -79,10 +75,6 @@ public:
 		: RiemannianStructure(manifold, frame) {}
 	ex phi() const;	///< The defining 3-form
 	ex starphi() const; ///< The Hodge dual of phi
-protected:
-/** @copydoc GStructure::GStructure(const Manifold*)
- */
-	G2Structure(const Manifold* manifold) : RiemannianStructure(manifold) {}
 };
 
 /** @brief An \f$\rm SU(2)\f$-structure on a 5-manifold
@@ -106,10 +98,6 @@ public:
 	ex omega3() const;	///< The imaginary part of the complex volume on the almost-contact distribution
 	ex alpha() const;	///< The (almost) contact form
 	ex psi() const; 	///< The spinor corresponding to the reduction \f$\mathrm{SO}(5)\supset \mathrm{SU}(2)\f$
-protected:
-/** @copydoc GStructure::GStructure(const Manifold*)
- */
- 	SU2Structure(const Manifold* manifold) : RiemannianStructure(manifold) {}
 };
 
 /** @brief An \f$\rm SU(3)\f$-structure on a manifold of real dimension 7
@@ -136,10 +124,6 @@ public:
 	ex OmegaMinus() const;///< The imaginary part of the complex volume on the almost-contact distribution
 	ex Omega() const {return OmegaPlus()+I*OmegaMinus();}	///< The complex volume on the almost-contact distribution
 	ex psi() const; 	///<The spinor corresponding to the reduction \f$\mathrm{SO}(7)\supset \mathrm{SU}(3)\f$
-protected:
-/** @copydoc GStructure::GStructure(const Manifold*)
- */
- 	SU3StructureDim7(const Manifold* manifold) : RiemannianStructure(manifold) {}
 };
 
 /** @brief A \f$\mathrm{PSU}(3)\f$-structure on a manifold of real dimension 8
@@ -150,11 +134,6 @@ protected:
 */
 
 class PSU3Structure : public RiemannianStructure {
-protected:
-/** @copydoc GStructure::GStructure(const Manifold*)
- */
-	PSU3Structure(const Manifold* manifold) : RiemannianStructure(manifold) {}
-		
 public:
 	static IntrinsicTorsionClass Xi8Plus, Xi8Minus, Xi20, Xi27Plus, Xi27Minus, Xi14;
 	enum LambdaComponentType {

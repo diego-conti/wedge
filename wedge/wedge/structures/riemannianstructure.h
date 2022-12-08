@@ -83,8 +83,6 @@ public:
  	 */
  	ex HodgeStar(ex alpha) const;
  	
-protected:
- 	RiemannianStructure(const Manifold* manifold) : RiemannianStructure(manifold,manifold->e())  {throw 0;}
 private:
 	class RiemannianHookOperator;
 	struct Deleter {

@@ -60,8 +60,6 @@ public:
 	SU4U1Structure(const Manifold* manifold, const Frame& frame): RiemannianStructure(manifold, frame) {}
 	ex Omega() const;					///< The defining 6-form
 	ex StarOmega() const {return HodgeStar(Omega());} 	///< The defining 4-form
-protected:
-	SU4U1Structure(const Manifold* manifold) : RiemannianStructure(manifold) {}
 };
 
 ex SU4U1Structure::Omega() const {

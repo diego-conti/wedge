@@ -42,15 +42,8 @@ pair<ex,matrix> PseudoRiemannianStructureByOrthonormalFrame::DecomposeRicci(matr
 	throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByOrthonormalFrame::DecomposeRicci");
 }
 
-ex PseudoRiemannianStructureByOrthonormalFrame::u(ZeroBased n) const {
-	int m=M()->Dimension()/2;
-	if (n<0) throw OutOfRange(__FILE__,__LINE__,n);
-	vector<int> signs(m,1);
-	signs.reserve(m);
-	for (int i=0;i<m;++i, n/=2)
-		if (n%2) signs[m-i-1]=-1;	//take into account reversal
-	if (n!=0) throw OutOfRange(__FILE__,__LINE__,n);
-	return Spinor::from_epsilons(signs);
+ex PseudoRiemannianStructureByOrthonormalFrame::u(ZeroBased n) const {	
+	return Spinor::from_index_and_dimension(n,M()->Dimension());
 }
 
 ex PseudoRiemannianStructureByOrthonormalFrame::u(const vector<int>& signs) const {
@@ -71,8 +64,9 @@ class CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,Lin
 	int s;	//the second element of the signature (r,s), i..e the number of taus that equal i
 
 	ex alpha_j(OneBased j) const {
+		int r=taus.size()-s;
 		if (j%2==0) return 1;
-		else if (j==orthonormal_coframe.size() && s%2) return -I;
+		else if (j==orthonormal_coframe.size() && (s-r+1)%4) return -I;
 		else return I;
 	}
 
@@ -100,10 +94,26 @@ public:
 	}	
 };
 
+class CliffordProductForm : public IBilinearOperator<AssociativeOperator<DifferentialForm>,LinearOperator<Spinor>> {
+	const CliffordProduct& clifford;
+	const ScalarProductByOrthonormalFrame& g;
+public:
+	CliffordProductForm(const CliffordProduct& clifford, const ScalarProductByOrthonormalFrame& g) : clifford{clifford}, g{g} {}
+	ex Apply (const VectorField& alpha, const Spinor& psi) const {
+		auto X=g.Sharp(alpha);
+		return CliffordProduct::BilinearOperator(X,psi,&clifford);
+	}
+};
+
 
 ex PseudoRiemannianStructureByOrthonormalFrame::CliffordDot(ex X, ex psi) const {
 		CliffordProduct clifford{e(), scalar_product.TimelikeIndices()};
 		return CliffordProduct::BilinearOperator(X,psi,&clifford);
+}
+ex PseudoRiemannianStructureByOrthonormalFrame::CliffordDotByForm(ex alpha, ex psi) const {
+	CliffordProduct clifford{e(), scalar_product.TimelikeIndices()};
+	CliffordProductForm clifford_form(clifford,scalar_product);
+	return CliffordProductForm::BilinearOperator(alpha,psi,&clifford);
 }
 
 }

@@ -199,4 +199,6 @@ Removed:
   Updated to GiNaC 1.8.4  
 Added:
   Function derivations
-  PseudoRiemannianStructure now supports spinors
+  PseudoRiemannianStructureByOrthogonalFrame for diagonal metrics
+  Spinor support for PseudoRiemannianStructureByOrthogonalFrame and PseudoRiemannianStructureByOrthonormalFrame 
+  

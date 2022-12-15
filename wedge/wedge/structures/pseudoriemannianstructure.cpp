@@ -18,6 +18,7 @@
  *  
  *******************************************************************************/
 #include "../structures/pseudoriemannianstructure.h"
+#include "pseudoriemannianstructure.h"
 
 namespace Wedge {
 
@@ -38,27 +39,28 @@ pair<ex,matrix> StandardPseudoRiemannianStructure::DecomposeRicci(matrix ricci) 
 	return {normalized_s,ricci};
 }
 
-pair<ex,matrix> PseudoRiemannianStructureByOrthonormalFrame::DecomposeRicci(matrix ricci) const  {
+
+pair<ex,matrix> PseudoRiemannianStructureByFrame::DecomposeRicci(matrix ricci) const  {
 	throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByOrthonormalFrame::DecomposeRicci");
 }
 
-ex PseudoRiemannianStructureByOrthonormalFrame::u(ZeroBased n) const {	
+ex PseudoRiemannianStructureByFrame::u(ZeroBased n) const {	
 	return Spinor::from_index_and_dimension(n,M()->Dimension());
 }
 
-ex PseudoRiemannianStructureByOrthonormalFrame::u(const vector<int>& signs) const {
+ex PseudoRiemannianStructureByFrame::u(const vector<int>& signs) const {
 	int m=M()->Dimension()/2;
 	if (signs.size()!=m) throw InvalidArgument(__FILE__,__LINE__,lst{list<ex>(signs.begin(),signs.end())});
 	return Spinor::from_epsilons(signs);
 }
 
 
-int PseudoRiemannianStructureByOrthonormalFrame::DimensionOfSpinorRepresentation() const
+int PseudoRiemannianStructureByFrame::DimensionOfSpinorRepresentation() const
 {
 	return 1<<(M()->Dimension()/2);
 }
 
-class PseudoRiemannianStructureByOrthonormalFrame::CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
+class PseudoRiemannianStructureByFrame::CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
 	Frame coframe;
 	ExVector taus;	//tau_k=i if e_k is timelike and 1 if spacelike
 	int s;	//the second element of the signature (r,s), i..e the number of taus that equal i
@@ -89,8 +91,7 @@ public:
 		int s=0;
 		for (int i=0;i<coframe.size();++i) {
 			taus.push_back(sqrt(square_norms_of_frame_vectors[i]));
-			if (square_norms_of_frame_vectors[i]<0) ++s;
-		}
+			if (square_norms_of_frame_vectors[i]<0) ++s;		}
 		return new CliffordProduct(coframe,taus,s);
 	}
 	ex Apply (const VectorField& X, const Spinor& spinor) const
@@ -105,36 +106,50 @@ public:
 	}	
 };
 
-class PseudoRiemannianStructureByOrthonormalFrame::CliffordProductForm : public IBilinearOperator<AssociativeOperator<DifferentialForm>,LinearOperator<Spinor>> {
-	const PseudoRiemannianStructureByOrthonormalFrame::CliffordProduct& clifford;
-	const ScalarProductByOrthonormalFrame& g;
+class PseudoRiemannianStructureByFrame::CliffordProductForm : public IBilinearOperator<AssociativeOperator<DifferentialForm>,LinearOperator<Spinor>> {
+	const PseudoRiemannianStructureByFrame::CliffordProduct& clifford;
+	const PseudoRiemannianStructure& g;
 public:
-	CliffordProductForm(const PseudoRiemannianStructureByOrthonormalFrame::CliffordProduct& clifford, const ScalarProductByOrthonormalFrame& g) : clifford{clifford}, g{g} {}
+	CliffordProductForm(const PseudoRiemannianStructureByFrame::CliffordProduct& clifford, const PseudoRiemannianStructure& g) : clifford{clifford}, g{g} {}
 	ex Apply (const VectorField& alpha, const Spinor& psi) const {
-		auto X=g.Sharp(alpha);
-		return PseudoRiemannianStructureByOrthonormalFrame::CliffordProduct::BilinearOperator(X,psi,&clifford);
+		auto X=g.ScalarProduct().Sharp(alpha);
+		return PseudoRiemannianStructureByFrame::CliffordProduct::BilinearOperator(X,psi,&clifford);
 	}
 };
 
-void PseudoRiemannianStructureByOrthonormalFrame::Deleter::operator() (CliffordProduct* r) {
+
+PseudoRiemannianStructureByFrame::PseudoRiemannianStructureByFrame(const Manifold *manifold, const Frame &frame, CliffordProduct *clifford_product)
+	: PseudoRiemannianStructure(manifold,frame), clifford_product_operator{clifford_product}, clifford_product_form_operator{new CliffordProductForm(*clifford_product_operator,*this)} {}
+
+void PseudoRiemannianStructureByFrame::Deleter::operator() (CliffordProduct* r) {
 	delete r;
 }
-void PseudoRiemannianStructureByOrthonormalFrame::Deleter::operator() (CliffordProductForm* r) {
+void PseudoRiemannianStructureByFrame::Deleter::operator() (CliffordProductForm* r) {
 	delete r;
 }
 
-ex PseudoRiemannianStructureByOrthonormalFrame::CliffordDot(ex X, ex psi) const {
+ex PseudoRiemannianStructureByFrame::CliffordDot(ex X, ex psi) const {
 	return CliffordProduct::BilinearOperator(X,psi,clifford_product_operator.get());
 }
-ex PseudoRiemannianStructureByOrthonormalFrame::CliffordDotByForm(ex alpha, ex psi) const {
+ex PseudoRiemannianStructureByFrame::CliffordDotByForm(ex alpha, ex psi) const {
 	return CliffordProductForm::BilinearOperator(alpha,psi,clifford_product_form_operator.get());
 }
 
 PseudoRiemannianStructureByOrthonormalFrame::PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product) :
-	PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)},
-	clifford_product_operator{CliffordProduct::FromTimelikeIndices(e(), this->scalar_product.TimelikeIndices())},
-	clifford_product_form_operator{new CliffordProductForm(*clifford_product_operator,this->scalar_product)}
+	PseudoRiemannianStructureByFrame(manifold,
+		frame,
+		CliffordProduct::FromTimelikeIndices(frame, scalar_product.TimelikeIndices())
+	), 
+	scalar_product{std::move(scalar_product)}
 	{}
 
+PseudoRiemannianStructureByOrthogonalFrame::PseudoRiemannianStructureByOrthogonalFrame(const Manifold *manifold, const Frame &orthogonal_coframe, const ExVector &g) :
+	PseudoRiemannianStructureByFrame(
+		manifold,
+		orthogonal_coframe,
+		CliffordProduct::FromSquareNormsOfFrameVectors(orthogonal_coframe, g)
+	),
+	scalar_product{ScalarProductByOrthogonalFrame::FromVectorSquareNorms(orthogonal_coframe,g)}
+	 {}
 
 }

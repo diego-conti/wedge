@@ -124,10 +124,66 @@ public:
 	pair<ex,matrix> DecomposeRicci(matrix ricci) const override {throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByMatrix::DecomposeRicci");}
 };
 
+/** @brief Base class for pseudoriemannian metrics on a manifold, represented by an orthogonal or orthonormal coframe
+ */
+ 
+class PseudoRiemannianStructureByFrame : public PseudoRiemannianStructure {	
+protected:
+	class CliffordProduct;
+	class CliffordProductForm;
+	PseudoRiemannianStructureByFrame(const Manifold* manifold, const Frame& frame, CliffordProduct* clifford_product);	
+	pair<ex,matrix> DecomposeRicci(matrix ricci) const override;
+public:
+/**
+   @brief Returns the k-th element of a global basis of complex spinors
+   @param k An index in the range [0,DimensionOfSpinorRepresentation())
+   @return The spinor \f$ u(\epsilon_m,\dots,\epsilon_1)\f$ where \epsilon_i=1 if the i-th least significant digit in base 2 of k is 0 and -1 otherwise
+*/
+	ex u(ZeroBased k) const;	
+
+/**
+   @brief Returns the complex spinor u(\epsilon_m,...,\epsilon_1)
+   @param signs The sequence \epsilon_1,...,\epsilon_m
+   @return A section of the complex spinor bundle
+*/
+	ex u(const vector<int>& signs) const;
+
+/** @brief Compute the Clifford action of a vector field on a spinor
+ * @param X A vector field
+ * @param psi A spinor
+ * @return The spinor \f$ X\cdot\psi\f$.
+	 
+  * @remark Clifford multiplication is implemented using the formulae of 
+ * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
+  *  
+  * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2}
+*/
+	ex CliffordDot(ex X, ex psi) const;
+
+/** @brief Compute the Clifford action of a vector field on a spinor
+ * @param alpha a differential form 
+ * @param psi A spinor
+ * @return The spinor \f$ alpha\cdot\psi\f$.
+*/
+	ex CliffordDotByForm(ex alpha, ex psi) const;
+/**
+   @brief Returns the rank of the complex spinor bundle
+   @return The number \f$2^{[n/2]}\f$, where \f$n\f$ is the manifold's dimension
+ */
+	int DimensionOfSpinorRepresentation() const;
+protected:
+	struct Deleter {
+  		void operator()(CliffordProduct* r);    
+  		void operator()(CliffordProductForm* r);    
+	};
+ 	unique_ptr<CliffordProduct,Deleter> clifford_product_operator;
+	unique_ptr<CliffordProductForm,Deleter> clifford_product_form_operator;
+};
+
 /** @brief Pseudoriemannian metric on a manifold, represented by an orthonormal coframe
  */
  
-class PseudoRiemannianStructureByOrthonormalFrame : public PseudoRiemannianStructure {	
+class PseudoRiemannianStructureByOrthonormalFrame : public PseudoRiemannianStructureByFrame {	
 	const ScalarProductByOrthonormalFrame scalar_product;
 protected:
 	PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product);
@@ -160,61 +216,12 @@ public:
 		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromSequenceOfSigns(orthonormal_frame,signs)};
 	}
 	const ScalarProductByOrthonormalFrame& ScalarProduct() const override {return scalar_product;}
-
-	pair<ex,matrix> DecomposeRicci(matrix ricci) const override;
-
-/**
-   @brief Returns the k-th element of a global basis of complex spinors
-   @param k An index in the range [0,DimensionOfSpinorRepresentation())
-   @return The spinor \f$ u(\epsilon_m,\dots,\epsilon_1)\f$ where \epsilon_i=1 if the i-th least significant digit in base 2 of k is 0 and -1 otherwise
-*/
-	ex u(ZeroBased k) const;	
-
-/**
-   @brief Returns the complex spinor u(\epsilon_m,...,\epsilon_1)
-   @param signs The sequence \epsilon_1,...,\epsilon_m
-   @return A section of the complex spinor bundle
-*/
-	ex u(const vector<int>& signs) const;
-
-/** @brief Compute the Clifford action of a vector field on a spinor
- * @param X A vector field
- * @param psi A spinor
- * @return The spinor \f$ X\cdot\psi\f$.
-	 
-  * @remark Clifford multiplication is implemented using the formulae of 
- * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
-  *  
-  * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2}
-*/
-	ex CliffordDot(ex X, ex psi) const;
-
-/** @brief Compute the Clifford action of a vector field on a spinor
- * @param alpha a differential form 
- * @param psi A spinor
- * @return The spinor \f$ alpha\cdot\psi\f$.
-*/
-	ex CliffordDotByForm(ex alpha, ex psi) const;
-/**
-   @brief Returns the rank of the complex spinor bundle
-   @return The number \f$2^{[n/2]}\f$, where \f$n\f$ is the manifold's dimension
- */
-	int DimensionOfSpinorRepresentation() const;
-private:
-	class CliffordProduct;
-	class CliffordProductForm;
-	struct Deleter {
-  		void operator()(CliffordProduct* r);    
-  		void operator()(CliffordProductForm* r);    
-	};
- 	unique_ptr<CliffordProduct,Deleter> clifford_product_operator;
-	unique_ptr<CliffordProductForm,Deleter> clifford_product_form_operator;
 };
 
-/** @brief Pseudoriemannian metric on a manifold, represented by an orthonormal coframe
+/** @brief Pseudoriemannian metric on a manifold, represented by an orthogonal coframe and the diagonal entries of the metric tensor
  */
  
-class PseudoRiemannianStructureByOrthogonalFrame : public PseudoRiemannianStructure {	
+class PseudoRiemannianStructureByOrthogonalFrame : public PseudoRiemannianStructureByFrame {	
 	const ScalarProductByOrthogonalFrame scalar_product;
 public:
 /** @brief 
@@ -222,58 +229,9 @@ public:
  *  @param orthogonal_coframe An orthogonal coframe e^1,...,e^n with respect to which the metric is defined
  *  @param g A sequence g_1,...,g_n such that the metric takes the form g_1e^1\otimes e^1+... + g_ne^n\otimes e^n
 */
-	PseudoRiemannianStructureByOrthogonalFrame(const Manifold* manifold, const Frame& orthogonal_coframe, const exvector& g);
+	PseudoRiemannianStructureByOrthogonalFrame(const Manifold* manifold, const Frame& orthogonal_coframe, const ExVector& g);
 
 	const ScalarProductByOrthogonalFrame& ScalarProduct() const override {return scalar_product;}
-
-	pair<ex,matrix> DecomposeRicci(matrix ricci) const override;
-
-/**
-   @brief Returns the k-th element of a global basis of complex spinors
-   @param k An index in the range [0,DimensionOfSpinorRepresentation())
-   @return The spinor \f$ u(\epsilon_m,\dots,\epsilon_1)\f$ where \epsilon_i=1 if the i-th least significant digit in base 2 of k is 0 and -1 otherwise
-*/
-	ex u(ZeroBased k) const;	
-
-/**
-   @brief Returns the complex spinor u(\epsilon_m,...,\epsilon_1)
-   @param signs The sequence \epsilon_1,...,\epsilon_m
-   @return A section of the complex spinor bundle
-*/
-	ex u(const vector<int>& signs) const;
-
-/** @brief Compute the Clifford action of a vector field on a spinor
- * @param X A vector field
- * @param psi A spinor
- * @return The spinor \f$ X\cdot\psi\f$.
-	 
-  * @remark Clifford multiplication is implemented using the formulae of 
- * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
-  *  
-  * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2}
-*/
-	ex CliffordDot(ex X, ex psi) const;
-
-/** @brief Compute the Clifford action of a vector field on a spinor
- * @param alpha a differential form 
- * @param psi A spinor
- * @return The spinor \f$ alpha\cdot\psi\f$.
-*/
-	ex CliffordDotByForm(ex alpha, ex psi) const;
-/**
-   @brief Returns the rank of the complex spinor bundle
-   @return The number \f$2^{[n/2]}\f$, where \f$n\f$ is the manifold's dimension
- */
-	int DimensionOfSpinorRepresentation() const;
-private:
-	class CliffordProduct;
-	class CliffordProductForm;
-	struct Deleter {
-  		void operator()(CliffordProduct* r);    
-  		void operator()(CliffordProductForm* r);    
-	};
- 	unique_ptr<CliffordProduct,Deleter> clifford_product_operator;
-	unique_ptr<CliffordProductForm,Deleter> clifford_product_form_operator;
 };
 
 

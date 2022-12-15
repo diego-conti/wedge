@@ -89,6 +89,45 @@ public:
 		TS_ASSERT_EQUALS(g.OnVectors(dual(3),dual(3)),-1);
 	}
 
+	void testScalarProductByOrtohogonalFrame() {
+		ConcreteManifold M(3);
+		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
+		auto dual=e.dual();
+		auto g =ScalarProductByOrthogonalFrame::FromVectorSquareNorms(e, {1,2,3});
+		TS_ASSERT_EQUALS(g.OnVectors(dual(1),dual(2)),0);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(1),dual(3)),0);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(2),dual(3)),0);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(1),dual(1)),1);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(2),dual(2)),2);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(3),dual(3)),3);
+
+		TS_ASSERT_EQUALS(g.OnForms(e(1),e(2)),0);
+		TS_ASSERT_EQUALS(g.OnForms(e(1),e(3)),0);
+		TS_ASSERT_EQUALS(g.OnForms(e(2),e(3)),0);
+		TS_ASSERT_EQUALS(g.OnForms(e(1),e(1)),1);
+		TS_ASSERT_EQUALS(g.OnForms(e(2),e(2)),1/ex(2));
+		TS_ASSERT_EQUALS(g.OnForms(e(3),e(3)),1/ex(3));		
+	}
+
+	void testScalarProductByOrtohogonalFrame2() {
+		ConcreteManifold M(3);
+		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
+		auto dual=e.dual();
+		auto g =ScalarProductByOrthogonalFrame::FromFormSquareNorms(e, {1,1/ex(2),1/ex(3)});
+		TS_ASSERT_EQUALS(g.OnVectors(dual(1),dual(2)),0);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(1),dual(3)),0);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(2),dual(3)),0);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(1),dual(1)),1);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(2),dual(2)),2);
+		TS_ASSERT_EQUALS(g.OnVectors(dual(3),dual(3)),3);
+
+		TS_ASSERT_EQUALS(g.OnForms(e(1),e(2)),0);
+		TS_ASSERT_EQUALS(g.OnForms(e(1),e(3)),0);
+		TS_ASSERT_EQUALS(g.OnForms(e(2),e(3)),0);
+		TS_ASSERT_EQUALS(g.OnForms(e(1),e(1)),1);
+		TS_ASSERT_EQUALS(g.OnForms(e(2),e(2)),1/ex(2));
+		TS_ASSERT_EQUALS(g.OnForms(e(3),e(3)),1/ex(3));		
+	}
 
 
 	void testCliffordRiemannianOdd() {
@@ -167,6 +206,45 @@ public:
 		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);
 
 	}
+
+	void testDiagonalCliffordIndefiniteEven() {
+		ConcreteManifold M(4);		
+		ex d1=M.e(1), d2=M.e(2),d3=M.e(3),d4=M.e(4);
+		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,M.e(),{-1,1,-1,1});
+		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
+			ex u=g.u(i);
+			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)),-u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)),u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d4,g.CliffordDot(d4,u)),-u);
+			for (auto X : M.e())
+			for (auto Y : M.e())
+				if (X!=Y) TS_ASSERT_EQUALS(g.CliffordDot(X,g.CliffordDot(Y,u))+g.CliffordDot(Y,g.CliffordDot(X,u)),0);
+		}
+		auto timelikeindices=vector<int>{1,3};
+		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);
+	}
+
+	void testDiagonalCliffordIndefiniteOdd() {
+		ConcreteManifold M(3);
+		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
+		auto dual=e.dual();
+		ex d1=dual(1), d2=dual(2), d3=dual(3);
+		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,e,{-1,1,-1});
+		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
+			ex u=g.u(i);
+			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)),-u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)),u);
+			for (auto X : dual)
+			for (auto Y : dual)
+				if (X!=Y) TS_ASSERT_EQUALS(g.CliffordDot(X,g.CliffordDot(Y,u))+g.CliffordDot(Y,g.CliffordDot(X,u)),0);
+		}
+		auto timelikeindices=vector<int>{1,3};
+		TS_ASSERT_EQUALS(g.ScalarProduct().TimelikeIndices(),timelikeindices);
+
+	}
+
 
 };
 

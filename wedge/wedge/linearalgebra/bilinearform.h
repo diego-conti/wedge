@@ -233,6 +233,49 @@ protected:
 	}
 };
 
+/** @brief Pseudoriemannian scalar product represented by an orthogonal coframe
+*/
+class ScalarProductByOrthogonalFrame : public BilinearFormWithFrame {
+	ExVector g; 	//the sequence <e_1,e_1>, ... , <e_n,e_n>
+	ScalarProductByOrthogonalFrame(const Frame& frame, const ExVector& g) : BilinearFormWithFrame(frame), g{g} {}
+public:
+/** @brief Define a Pseudoriemannian scalar product in terms of an orthonormal coframe
+*  @param orthogonal_coframe An orthogonal coframe e^1,...,e^n with respect to which the metric is defined
+*  @param g A sequence g_1,...,g_n such that the metric takes the form g_1e^1\otimes e^1+... + g_ne^n\otimes e^n
+*/
+	static ScalarProductByOrthogonalFrame FromVectorSquareNorms(const Frame& frame, const ExVector& g) {
+		return ScalarProductByOrthogonalFrame{frame,g};		
+	}
+/** @brief Define a Pseudoriemannian scalar product in terms of an orthonormal coframe
+*  @param orthogonal_coframe An orthogonal coframe e^1,...,e^n with respect to which the metric is defined
+*  @param g the sequence <e^1,e^1>, ... , <e^n,e^n>
+*/
+	static ScalarProductByOrthogonalFrame FromFormSquareNorms(const Frame& frame, const ExVector& g) {
+		ExVector g_inverse;
+		g_inverse.reserve(g.size());
+		std::transform(g.begin(),g.end(),back_inserter(g_inverse),[] (ex x) {return 1/x;});
+		return ScalarProductByOrthogonalFrame{frame,g_inverse};		
+	}
+	/**
+   @brief Returns the list of timelike elements in the orthogonal frame
+   @return A list of one-based indices corresponding to timelike elements in the orthogonal frame
+ */
+	vector<int> TimelikeIndices() const {
+		vector<int> result;
+		for (int i=1;i<=g.size();++i)
+			if (g(i)<0) result.push_back(i);
+		return result;
+	}
+
+protected:
+	ex MatrixEntry(OneBased i, OneBased j) const override {
+		return i==j? 1/g(i) : 0;
+	}
+	ex InverseMatrixEntry(OneBased i, OneBased j) const override {
+		return i==j? g(i) : 0;
+	}
+};
+
 
 /** @brief Neutral scalar product represented by a matrix of the form ((0 I) (I 0))
 */

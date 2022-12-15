@@ -59,14 +59,14 @@ int PseudoRiemannianStructureByOrthonormalFrame::DimensionOfSpinorRepresentation
 }
 
 class PseudoRiemannianStructureByOrthonormalFrame::CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
-	Frame orthonormal_coframe;
+	Frame coframe;
 	ExVector taus;	//tau_k=i if e_k is timelike and 1 if spacelike
 	int s;	//the second element of the signature (r,s), i..e the number of taus that equal i
 
 	ex alpha_j(OneBased j) const {
 		int r=taus.size()-s;
 		if (j%2==0) return 1;
-		else if (j==orthonormal_coframe.size() && (s-r+1)%4) return -I;
+		else if (j==coframe.size() && (s-r+1)%4) return -I;
 		else return I;
 	}
 
@@ -76,17 +76,28 @@ class PseudoRiemannianStructureByOrthonormalFrame::CliffordProduct : public IBil
 		if (j==taus.size() && j%2==1)  return coeff*spinor;
 		else return coeff*spinor.reflect((j+1)/2);
 	}
+	CliffordProduct(const Frame& coframe, const ExVector& taus, int s) : coframe{coframe}, taus{taus},s{s} {}
 public:
-	CliffordProduct(const Frame& frame, const vector<int>& timelike_indices) : orthonormal_coframe{frame}, taus(frame.size(),1), s{timelike_indices.size()} {
-		//std::fill(taus.begin(),taus.end(),ex{1});
+	static CliffordProduct* FromTimelikeIndices(const Frame& coframe, const vector<int>& timelike_indices) {
+		ExVector taus(coframe.size(),1);
 		for (int i: timelike_indices) 
 			taus(i)=I;		
+		return new CliffordProduct{coframe, taus,timelike_indices.size()};
+	}
+	static CliffordProduct* FromSquareNormsOfFrameVectors(const Frame& coframe, const ExVector& square_norms_of_frame_vectors) {
+		ExVector taus;
+		int s=0;
+		for (int i=0;i<coframe.size();++i) {
+			taus.push_back(sqrt(square_norms_of_frame_vectors[i]));
+			if (square_norms_of_frame_vectors[i]<0) ++s;
+		}
+		return new CliffordProduct(coframe,taus,s);
 	}
 	ex Apply (const VectorField& X, const Spinor& spinor) const
 	{
 		ex result;		
-		for (int i=1;i<=orthonormal_coframe.size();++i) {
-			ex component = TrivialPairing<VectorField>(X,orthonormal_coframe(i));			
+		for (int i=1;i<=coframe.size();++i) {
+			ex component = TrivialPairing<VectorField>(X,coframe(i));			
 			if (!component.is_zero())
 				result+=component*dot(i,spinor);
 		}
@@ -121,7 +132,7 @@ ex PseudoRiemannianStructureByOrthonormalFrame::CliffordDotByForm(ex alpha, ex p
 
 PseudoRiemannianStructureByOrthonormalFrame::PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product) :
 	PseudoRiemannianStructure(manifold,frame), scalar_product{std::move(scalar_product)},
-	clifford_product_operator{new CliffordProduct(e(), this->scalar_product.TimelikeIndices())},
+	clifford_product_operator{CliffordProduct::FromTimelikeIndices(e(), this->scalar_product.TimelikeIndices())},
 	clifford_product_form_operator{new CliffordProductForm(*clifford_product_operator,this->scalar_product)}
 	{}
 

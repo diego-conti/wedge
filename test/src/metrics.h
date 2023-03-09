@@ -230,11 +230,12 @@ public:
 		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
 		auto dual=e.dual();
 		ex d1=dual(1), d2=dual(2), d3=dual(3);
-		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,e,{-2,3,-4});
+		possymbol a("a");
+		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,e,{-a,a,-4});
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
-			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)).expand(),2*u);
-			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)).expand(),-3*u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)).expand(),a*u);
+			TS_ASSERT_EQUALS(g.CliffordDot(d2,g.CliffordDot(d2,u)).expand(),-a*u);
 			TS_ASSERT_EQUALS(g.CliffordDot(d3,g.CliffordDot(d3,u)).expand(),4*u);
 			for (auto X : dual)
 			for (auto Y : dual)

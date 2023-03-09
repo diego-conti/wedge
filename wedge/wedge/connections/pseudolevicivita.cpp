@@ -42,13 +42,12 @@ PseudoLeviCivitaConnection::PseudoLeviCivitaConnection(const Manifold* manifold,
     const int dimension=e().size();
     components.reserve(dimension);
     for (int i=0;i<dimension;i++)
-    components.push_back(exvector(dimension));
+        components.push_back(exvector(dimension));
 
     ExVector e_flat(dimension);	//i-th element represents ((e_i)^\flat))
     ExVector frame=structure.e().dual();
     for (int i=1;i<=dimension;++i)
-    for (int j=1;j<=dimension;++j)
-        e_flat(i)+=structure.ScalarProduct().OnVectors(frame(i),frame(j))*structure.e(j); 
+        e_flat(i)=structure.ScalarProduct().Flat(frame(i));
     exvector de;	//i-th element represents d((e_i)^\flat))
     de.reserve(dimension);
     for (int i=1;i<=dimension;++i)
@@ -65,7 +64,7 @@ PseudoLeviCivitaConnection::PseudoLeviCivitaConnection(const Manifold* manifold,
             TrivialPairing<DifferentialForm>(Z*X,-de[j])+
             TrivialPairing<DifferentialForm>(Z*Y,-de[i]);
     for (int h=0;h<dimension;++h)
-        (*this)(h,j)+=(e()[i]*XYZ/2*structure.ScalarProduct().OnOneForms(e()[h],e()[k])).expand();
+        (*this)(h,j)+=(structure.e()[i]*XYZ/2*structure.ScalarProduct().OnVectors(frame[h],frame[k])).expand();
     }
 }
 

@@ -687,6 +687,21 @@ public:
 
 	}
 
+	void testPseudoLeviCivita2() {
+		AbstractLieGroup<> M("0,0,12");
+		auto g=PseudoRiemannianStructureByMatrix::FromMatrixOnFrame(&M,M.e(),{{-1,0,2},{0,1,0},{2,0,-1}});
+		PseudoLeviCivitaConnection leviCivita(&M,g);
+		auto omega=ParseDifferentialForms(M.e(),"-1/3*2,-1/3*1+1/6*3,1/6*2,2*1-1/2*3,0,-1/2*1,-1/6*2,-7/6*1+1/3*3,1/3*2");
+		TS_ASSERT_EQUALS(leviCivita(0,0),omega[0]);
+		TS_ASSERT_EQUALS(leviCivita(0,1),omega[1]);
+		TS_ASSERT_EQUALS(leviCivita(0,2),omega[2]);
+		TS_ASSERT_EQUALS(leviCivita(1,0),omega[3]);
+		TS_ASSERT_EQUALS(leviCivita(1,1),omega[4]);
+		TS_ASSERT_EQUALS(leviCivita(1,2),omega[5]);
+		TS_ASSERT_EQUALS(leviCivita(2,0),omega[6]);
+		TS_ASSERT_EQUALS(leviCivita(2,1),omega[7]);
+		TS_ASSERT_EQUALS(leviCivita(2,2),omega[8]);
+	}
 	//the Killing constant depends on conventions
 	void testSpinors() {
 		S3 M;

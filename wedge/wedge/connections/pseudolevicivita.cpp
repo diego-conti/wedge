@@ -7,8 +7,8 @@ class CovariantDerivativeSpinor: public IBilinearOperator<LinearOperator<VectorF
     const PseudoRiemannianStructureByOrthonormalFrame& g;
 	const PseudoLeviCivitaConnection& connection;
     ex double_clifford(ZeroBased i, ZeroBased j, ex psi) const {
-        ex e_i=g.e()[i];
-        ex e_jsharp=g.ScalarProduct().Sharp(g.e().dual()[j]);
+        ex e_i=g.e().dual()[i];
+        ex e_jsharp=g.ScalarProduct().Sharp(g.e()[j]);
         return g.CliffordDot(e_jsharp, g.CliffordDot(e_i,psi));
     }
 public:
@@ -44,6 +44,9 @@ PseudoLeviCivitaConnection::PseudoLeviCivitaConnection(const Manifold* manifold,
     for (int i=0;i<dimension;i++)
         components.push_back(exvector(dimension));
 
+    //uses the formula \nabla_{e_i}e_j = \sum_k \langle \nabla_{e_i}e_j, (e^k)^\sharp\rangle e_k
+    //\omega_kj = \langle \nabla_{e_i}e_j, (e^k)^\sharp\rangle e^i
+
     ExVector e_flat(dimension);	//i-th element represents ((e_i)^\flat))
     ExVector frame=structure.e().dual();
     for (int i=1;i<=dimension;++i)
@@ -52,20 +55,19 @@ PseudoLeviCivitaConnection::PseudoLeviCivitaConnection(const Manifold* manifold,
     de.reserve(dimension);
     for (int i=1;i<=dimension;++i)
         de.push_back(manifold->d(e_flat(i)).normal());
-    for (int i=0;i<dimension;++i)
-    for (int j=0;j<dimension;++j)
-    for (int k=0;k<dimension;++k)
-    {
-
-    ex X=frame[i];
-    ex Y=frame[j]; 
-    ex Z=frame[k];
-    ex XYZ=TrivialPairing<DifferentialForm>(X*Y,-de[k])+
-            TrivialPairing<DifferentialForm>(Z*X,-de[j])+
-            TrivialPairing<DifferentialForm>(Z*Y,-de[i]);
-    for (int h=0;h<dimension;++h)
-        (*this)(h,j)+=(structure.e()[i]*XYZ/2*structure.ScalarProduct().OnVectors(frame[h],frame[k])).expand();
-    }
+    for (int k=0;k<dimension;++k)  {
+        ex ek=structure.e()[k];
+        ex Z=structure.ScalarProduct().Sharp(ek);
+        for (int i=0;i<dimension;++i)
+        for (int j=0;j<dimension;++j) {
+            ex X=frame[i];
+            ex Y=frame[j];         
+            ex XYZ=TrivialPairing<DifferentialForm>(X*Y,-manifold->d(ek))+
+                TrivialPairing<DifferentialForm>(Z*X,-de[j])+
+                TrivialPairing<DifferentialForm>(Z*Y,-de[i]); 
+            (*this)(k,j)+=structure.e()[i]*XYZ/2;
+        }
+    }        
 }
 
 template<>

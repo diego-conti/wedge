@@ -644,7 +644,7 @@ public:
 		for (int i=1;i<=3;++i)
 		for (int j=1;j<=3;++j) {
 			ex tij=	leviCivita.Nabla<VectorField>(M.e(i),M.e(j))-
-				leviCivita.Nabla<VectorField>(M.e(j),M.e(i))-
+				leviCivita.Nabla<VectorField>(M.e(j),M	.e(i))-
 				M.LieBracket(M.e(i),M.e(j));
 			TS_ASSERT(tij.expand().is_zero());
 		}

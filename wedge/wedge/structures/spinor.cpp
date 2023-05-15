@@ -41,7 +41,7 @@ int Spinor::compare_same_type(const basic &other) const
 
 void Spinor::print(const print_context &c, unsigned level) const {
 	int index=0;
-	for (auto i=a.begin();i!=a.end();i++) index=*i? index*2+1:index*2;
+	for (auto i=a.rbegin();i!=a.rend();i++) index=*i? index*2+1:index*2;
 	if (dynamic_cast<const GiNaC::print_latex*>(&c))
 		c.s<<"u_{"<<index<<"}";
 	else
@@ -64,9 +64,10 @@ Spinor Spinor::from_index_and_dimension(ZeroBased n, int dimension) {
 	auto oldn=n;
 	int m=dimension/2;
 	if (n<0) throw OutOfRange(__FILE__,__LINE__,n);
-	vector<int> signs(m,1);		
+	vector<int> signs;
+	signs.reserve(m);
 	for (int i=0;i<m;++i, n/=2)
-		if (n%2) signs[m-i-1]=-1;	//take into account reversal
+		signs.push_back((n%2)? -1 : 1);
 	if (n!=0) throw OutOfRange(__FILE__,__LINE__,oldn);
 	return Spinor::from_epsilons(signs);
 }

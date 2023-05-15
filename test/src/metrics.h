@@ -256,8 +256,8 @@ public:
 		ConcreteManifold M(4);
 		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
 		TS_ASSERT_EQUALS(g.u(0),g.u({1,1}));
-		TS_ASSERT_EQUALS(g.u(1),g.u({1,-1}));
-		TS_ASSERT_EQUALS(g.u(2),g.u({-1,1}));
+		TS_ASSERT_EQUALS(g.u(1),g.u({-1,1}));
+		TS_ASSERT_EQUALS(g.u(2),g.u({1,-1}));
 		TS_ASSERT_EQUALS(g.u(3),g.u({-1,-1}));
 		TS_ASSERT_EQUALS(g.DimensionOfSpinorRepresentation(),4);
 		TS_ASSERT_THROWS(g.u(-1),OutOfRange);
@@ -269,8 +269,8 @@ public:
 		ConcreteManifold M(5);
 		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
 		TS_ASSERT_EQUALS(g.u(0),g.u({1,1}));
-		TS_ASSERT_EQUALS(g.u(1),g.u({1,-1}));
-		TS_ASSERT_EQUALS(g.u(2),g.u({-1,1}));
+		TS_ASSERT_EQUALS(g.u(1),g.u({-1,1}));
+		TS_ASSERT_EQUALS(g.u(2),g.u({1,-1}));
 		TS_ASSERT_EQUALS(g.u(3),g.u({-1,-1}));
 		TS_ASSERT_EQUALS(g.DimensionOfSpinorRepresentation(),4);
 		TS_ASSERT_THROWS(g.u(-1),OutOfRange);
@@ -282,9 +282,9 @@ public:
 		ConcreteManifold M(6);
 		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
 		TS_ASSERT_EQUALS(g.u(0),g.u({1,1,1}));
-		TS_ASSERT_EQUALS(g.u(1),g.u({1,1,-1}));
+		TS_ASSERT_EQUALS(g.u(1),g.u({-1,1,1}));
 		TS_ASSERT_EQUALS(g.u(2),g.u({1,-1,1}));
-		TS_ASSERT_EQUALS(g.u(3),g.u({1,-1,-1}));
+		TS_ASSERT_EQUALS(g.u(3),g.u({-1,-1,1}));
 		TS_ASSERT_EQUALS(g.DimensionOfSpinorRepresentation(),8);
 		TS_ASSERT_THROWS(g.u(-1),OutOfRange);
 		TS_ASSERT_THROWS(g.u(8),OutOfRange);

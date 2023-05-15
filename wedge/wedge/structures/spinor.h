@@ -86,7 +86,7 @@ public:
 	}
 private:
 	void print(const print_context &c, unsigned level) const;	///< Overloaded from basic::print
-	vector<bool> a;	//true represents -1, false 1
+	vector<bool> a;	//the sequence epsilon_1,...,epsilon_m; true represents -1, false 1
 };
 
 

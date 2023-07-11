@@ -17,18 +17,15 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             
  *  
  *******************************************************************************/
-#ifndef DERIVATIONS_H
-#define DERIVATIONS_H
-#include "liegroup.h"
-#include "wedge/representations/gl.h"
-#include "wedge/representations/linearaction.h"
 
 namespace Wedge {
-
-
-/** @brief Return the space of derivations of n n-dimensional Lie algebra without parameters as a subspace of gl(n,R) */
-VectorSpace<DifferentialForm> derivations(const LieGroup& G,const GL& Gl);
-
+template<typename Vector> string horizontal(const Vector& v, string sep=",") {
+	if (v.empty()) return {};
+	stringstream ss;
+	auto i=v.begin();
+	ss<<latex<<*i;
+	while (++i!=v.end()) ss<<sep<<*i;
+	return ss.str();
+}
 
 }
-#endif

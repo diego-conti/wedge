@@ -29,6 +29,7 @@
 #include "wedge/liealgebras/liesubgroup.h"
 #include "wedge/liealgebras/so.h"
 #include "wedge/liealgebras/su.h"
+#include "wedge/liealgebras/liegrouptostring.h"
 #include "wedge/liealgebras/derivations.h"
 #include "wedge/polynomialalgebra/cocoapolyalg.h"
 #include "wedge/polynomialalgebra/polybasis.h"
@@ -335,6 +336,17 @@ public:
 		TS_ASSERT(der.Contains(gl.A(1,2)-gl.A(2,1)));
 		TS_ASSERT(der.Contains(gl.A(3,2)-gl.A(2,3)));
 		TS_ASSERT(der.Contains(gl.A(1,3)-gl.A(3,1)));
+	}
+
+	void test_lie_group_to_string() {
+		AbstractLieGroup<> G("23,31,12");
+		TS_ASSERT_EQUALS(lie_group_to_string(G),"23,-13,12");
+		AbstractLieGroup<> G2("0,12,13,14,15,16,17,18,19,1a");
+		TS_ASSERT_EQUALS(lie_group_to_string(G2),"0,12,13,14,15,16,17,18,19,1a");
+		AbstractLieGroup<> G3("0,-12,-2*13+12");
+		TS_ASSERT_EQUALS(lie_group_to_string(G3),"0,-12,12-2*13");
+		AbstractLieGroup<true> G4("0,[a]*12,[sqrt(2)]*13",N.a);
+		TS_ASSERT_EQUALS(lie_group_to_string(G4),"0,[a]*12,[sqrt(2)]*13");
 	}
 };
 

@@ -71,7 +71,7 @@ void Manifold::Check_ddZero()
 {
 	for (int i=0;i<Dimension();i++)
 	{
-		ex ddei=d(d(e()[i])).expand();
+		ex ddei=NormalForm<DifferentialForm>(d(d(e()[i])));
 		list<ex> eqns;
 		GetCoefficients<DifferentialForm>(eqns,ddei);
 		if (!eqns.empty()) {

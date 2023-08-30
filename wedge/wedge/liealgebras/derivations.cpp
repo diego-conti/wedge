@@ -37,13 +37,22 @@ exvector Xbrackets(const LieGroup& G, const GLRepresentation<VectorField>& V, ex
 		return Xbrackets;
 }
 
+
+lst equations_such_that_linear_map_is_derivation(const LieGroup& G, const GL& gl, ex f) {
+	lst eqns;
+	auto X=Xbrackets(G,GLRepresentation<VectorField>(&gl,G.e()),f);		
+	GetCoefficients<VectorField>(eqns,X);	
+	return eqns;
+}
+	
+
 VectorSpace<DifferentialForm> derivations(const LieGroup& G,const GL& Gl)  {
 		auto gl=Gl.pForms(1);
-		auto generic_matrix =gl.GenericElement();
-		auto X=Xbrackets(G,GLRepresentation<VectorField>(&Gl,G.e()),generic_matrix);
-		lst eqns,sol;
-		GetCoefficients<VectorField>(eqns,X);
+		auto generic_matrix =gl.GenericElement();				
+		auto eqns=equations_such_that_linear_map_is_derivation(G,Gl,generic_matrix);
+		lst sol;		
 		gl.GetSolutions(sol,eqns.begin(),eqns.end());		
 		return {sol.begin(),sol.end()};
 }
+
 }

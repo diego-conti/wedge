@@ -25,6 +25,8 @@
 
 namespace Wedge {
 
+/** @brief Return a lst of equations that an element f of gl, acting on G with the action induced by G.e(), must satisfy in order to be a derivation of G */
+lst equations_such_that_linear_map_is_derivation(const LieGroup& G, const GL& gl, ex f);
 
 /** @brief Return the space of derivations of n n-dimensional Lie algebra without parameters as a subspace of gl(n,R) */
 VectorSpace<DifferentialForm> derivations(const LieGroup& G,const GL& Gl);

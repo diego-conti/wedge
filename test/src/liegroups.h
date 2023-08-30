@@ -99,6 +99,11 @@ public:
 		TS_ASSERT_EQUALS(SU3.ExactForms(2),SU3.ClosedForms(2));
 		TS_ASSERT(SU3.IsUnimodular());
 	}
+	void testGetFrameLength() {
+		AbstractLieGroup<> G{"0,[pow(2,-2)]*12,0"};
+		TS_ASSERT_EQUALS(G.Dimension(),3);
+		TS_ASSERT_EQUALS(G.d(G.e(2)),1/ex(4)*G.e(1)*G.e(2));		
+	}
 
 	void testCanonicalPrint() {
 		AbstractLieGroup<> G("0,0,[sqrt(3)]*12,13+23");

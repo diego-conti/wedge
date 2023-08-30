@@ -42,6 +42,14 @@ WEDGE_DECLARE_NAMED_ALGEBRAIC(X,symbol)
 class ParseTestSuite : public CxxTest::TestSuite 
 {
 public:
+	void testParseGinac() {
+		//test if Ginac's parser works correctly on square roots
+		ex p("sqrt(3)"s,lst{});
+		TS_ASSERT_EQUALS(p*p,3);
+		symbol a("a");
+		ex q("sqrt(a)",lst{a});
+		TS_ASSERT_EQUALS(q*q,a);
+	}
 	void testParseMaple()
 	{
 		symbol a("a"),b("b");

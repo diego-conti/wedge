@@ -37,8 +37,30 @@ ostream& LieGroup::canonical_print(ostream& os) const {
 
 namespace internal {
 
+struct NestLevel {
+	int round_bracket_nesting=0;
+	int square_bracket_nesting=0;
+public:
+	void parse(char c) {
+		switch (c) {
+			case '(': ++round_bracket_nesting; break;
+			case ')': --round_bracket_nesting;break;
+			case '[': ++square_bracket_nesting;break;
+			case ']': --square_bracket_nesting;break;
+			default: break;
+		}
+	}
+	int level() const {return round_bracket_nesting+square_bracket_nesting;}
+};
+
 int GetFrameLength(string structureConstants) {
-	return count(structureConstants.begin(),structureConstants.end(),',')+1;
+	NestLevel level;	
+	int zero_level_commas=0;
+	for (int i=0;i<structureConstants.size();++i) {
+		level.parse(structureConstants[i]);
+		if (structureConstants[i]==',' && !level.level()) ++zero_level_commas;
+	}	
+	return zero_level_commas+1;
 }
 
 }

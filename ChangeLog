@@ -210,3 +210,4 @@ Added:
   lie_group_to_string, function converting a lie group to a string in "Salamon notation"
   convenience function horizontal, which can be used to print out vectors as a horizontal comma-separated list rather than one entry per line
   function equations_such_that_linear_map_is_derivation to test whether a given element of gl is a derivation of a Lie algebra
+  added copy operator to Has_dTable

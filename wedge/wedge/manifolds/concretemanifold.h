@@ -39,8 +39,9 @@ namespace Wedge {
  */
 class Has_dTable : public virtual Manifold {
 public:
-	Has_dTable(const Has_dTable& o); 		///< Copy constructor
 	Has_dTable();
+	Has_dTable(const Has_dTable& o); 		///< Copy constructor
+	Has_dTable& operator=(const Has_dTable& o);
 	const exmap& dTable() const {return table;}	///< Return a read-only version of the dTable
 	ex d(ex alpha) const;
 	bool KnowsHowToCompute_d() const {return true;} 

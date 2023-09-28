@@ -164,6 +164,11 @@ Has_dTable::Has_dTable(const Has_dTable& o) : Manifold(o), the_d_operator(new dO
 	table=o.table;	
 }
 
+Has_dTable& Has_dTable::operator=(const Has_dTable& o) {
+	table=o.table;
+	return *this;
+}
+
 Has_dTable::Has_dTable(): the_d_operator(new dOperator(*this))
 {	
 	Declare_d(constant_function,0);	

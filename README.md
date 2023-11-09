@@ -45,8 +45,8 @@ In order to compile a program using *Wedge*, create a file called `CMakeLists.tx
 	set(SRC main.cpp)
 	add_executable(mywedgeproject ${SRC})
 	target_link_libraries(mywedgeproject PUBLIC wedge ginac cocoa gmp)
-	target_link_directories(mywedgeproject PUBLIC ${WEDGE_PATH}/lib)
-	target_include_directories(mywedgeproject PUBLIC ${WEDGE_PATH}/include)
+	target_link_directories(mywedgeproject PUBLIC $ENV{WEDGE_PATH}/lib)
+	target_include_directories(mywedgeproject PUBLIC $ENV{WEDGE_PATH}/include)
 
 Replace `main.cpp` with the name(s) of the C++ source files that need to be compiled. Change the compile options as per your preferences.
 

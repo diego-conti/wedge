@@ -1,0 +1,3 @@
+#define WEDGE_VERSION_MAJOR 4
+#define WEDGE_VERSION_MINOR 0
+

@@ -431,10 +431,11 @@ template<typename T, typename DegreeType> class ComputeDegree: public RecursiveV
 	void visit(const power& x) {
 		this->Result()=this->RecursiveVisit(x.op(0));
 		if (this->Result()==0) return;
-		if (is_a<numeric>(x.op(1))) {
-			const numeric& exponent=ex_to<numeric>(x.op(1));
-			if (exponent.is_integer()) {
-				this->Result()*=exponent.to_int();
+		auto exponent=x.op(1);
+		if (is_a<numeric>(exponent)) {
+			const numeric& numeric_exponent=ex_to<numeric>(exponent);
+			if (numeric_exponent.is_integer()) {
+				this->Result()*=numeric_exponent.to_int();
 				return;
 			}
 		}

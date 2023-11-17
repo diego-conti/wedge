@@ -156,6 +156,9 @@ public:
 		TS_ASSERT_EQUALS(to_canonical_string((a+a1)/a2),"(a+a1)*a2^(-1)");
 		TS_ASSERT_EQUALS(to_canonical_string(a*a1),"a*a1");
 		TS_ASSERT_EQUALS(to_canonical_string(a*a1+a),"a+a*a1");
+
+		TS_ASSERT_EQUALS(to_canonical_string(sqrt(ex(2))*a1+a),"a+sqrt(2)*a1");
+
 	}
 	string to_latex_canonical_string(ex x) {
 		stringstream s;

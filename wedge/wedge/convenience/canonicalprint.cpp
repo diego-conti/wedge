@@ -74,7 +74,8 @@ class Term {
 	}
 	static int type_code(ex x) {
 		if (is_product(x) && is_product(-x)) return 1;
-		else if (is_a<numeric>(x)) return -1;
+		else if (is_a<numeric>(x)) return -2;
+		else if (is_a<power>(x) && is_a<numeric>(x.op(0)) && is_a<numeric>(x.op(1))) return -1;
 		else return 0;
 	}
 	auto to_tuple_for_comparison() const {

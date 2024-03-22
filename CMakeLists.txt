@@ -1,9 +1,10 @@
 include(FetchContent)
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10...3.25)
 project(Wedge VERSION 4.0)
 configure_file(wedge/wedge/wedgeconfig.h.in wedge/wedgeconfig.h)
 set(GINAC_DIR ${CMAKE_SOURCE_DIR}/ginac-1.8.7)
 set(CXXTEST_DIR ${CMAKE_SOURCE_DIR}/cxxtest) 
+cmake_policy(SET CMP0135 OLD) 
 
 FetchContent_Declare(ginac
 	URL https://www.ginac.de/ginac-1.8.7.tar.bz2 

@@ -164,6 +164,7 @@ public:
 		for (Iterator i=begin;i!=end;++i)		
 			GetCoefficientsComplex(eqns,*i,withRHS);
 		if (eqns.empty()) return;		
+		//for (auto& x: eqns) x=NormalizeRoots(x.normal());
 		list<ex> unknowns;
 		GetSymbols<TypeOfParameter>(unknowns,eqns.begin(),eqns.end());
 		LOG_DEBUG(unknowns);

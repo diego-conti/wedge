@@ -88,7 +88,7 @@ public:
 			LOG_ERROR(o);
 			throw WedgeException<std::runtime_error>("Non-numeric exponent in polynomial",__FILE__,__LINE__);						
 		}
-		const numeric& a=ex_to<numeric>(o.op(1));
+		const numeric a=ex_to<numeric>(o.op(1));
 		if (!a.is_integer()) {
 			LOG_ERROR(o);
 			throw WedgeException<std::runtime_error>("Non-integer exponent in polynomial",__FILE__,__LINE__);						
@@ -391,7 +391,7 @@ private:
 				for (typename map<power,ex,basic_is_less>::iterator i=substitutions.begin();i!=substitutions.end();++i)
 				{
 					assert(is_a<numeric>(i->first.op(0)));
-					const numeric& x=ex_to<numeric>(i->first.op(0));
+					const numeric x=ex_to<numeric>(i->first.op(0));
 					ex xnum=AddIntegralRoot(x.numer(),true);
 					ex xden=AddIntegralRoot(x.denom(),false);
 					assert(is_a<numeric>(i->first.op(1)*B));

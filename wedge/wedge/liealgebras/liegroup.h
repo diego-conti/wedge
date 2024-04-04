@@ -177,12 +177,22 @@ public:
 	
 /** @brief Impose conditions on the parameters so that \f$d\alpha=\beta\f$
  * @param alpha,beta Differential forms
+ * 
+ * The assumption is that the equations \f$d\alpha=\beta\f$, \f$d\beta=0\f$ depend linearly on the parameters.
  */
 	void Declare_d(ex alpha, ex beta)
 	{
 		DeclareZero(d(beta));
 		DeclareZero(d(alpha)-beta);
 	}	
+
+/** @brief Update dtable by imposing \f$d\alpha=\beta\f$
+ * @param alpha,beta Differential forms as in Has_dTable::Declare_d
+ */
+
+	void ReplaceIn_dTable(ex alpha, ex beta) {
+		Has_dTable::Declare_d(alpha,beta);
+	}
 private:
 	void DeclareConditions(const lst& list_of_equations) {
 		for (exmap::const_iterator i=dTable().begin();i!=dTable().end();i++)					

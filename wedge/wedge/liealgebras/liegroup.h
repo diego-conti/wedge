@@ -204,6 +204,29 @@ private:
 typedef LieGroupHasParameters<true> LieGroupWithParameters;
 typedef LieGroupHasParameters<false> LieGroupWithoutParameters;
 
+/** @brief Instances of LieGroupFamily represent family of Lie groups defined by their structure constants, which may have parameters. The Jacobi equation may not
+ * hold for all values of the parameters.
+ * 
+ * @sa AbstractLieGroup<true>, which does impose Jacobi. 
+*/
+class LieGroupFamily : public LieGroupWithParameters,  public ConcreteManifold, public virtual Has_dTable {
+	struct DelegatedConstructor {} delegate_constructor_tag;
+	LieGroupFamily(DelegatedConstructor,const char* structure_constants,const lst& parameters);
+public:
+  /** @brief Define a Lie group by the structure constants given in Salamon's notation
+   *  @param structure_constants A string of the form, e.g., "0,0,12,-13+2*42"; bracket notation such as [sqrt(3)] is allowed
+   *  @params parameters a sequence of symbols, lists of symbols, Name's, or NameIndex's corresponding to parameters used in the definition of the Lie algebra
+   * In order to use a parameter, say a, use the bracket notation as in [a]*12. The parameter needs to also be passed in the constructor, either as an ex, or an element of a lst of ex,
+   * or by name, in which case a StructureConstant object with that name is created.
+   *
+   * @sa ParseDifferentialForms(const exvector& frame, const char* to_parse)
+  */
+	template<typename... Parameters>
+	LieGroupFamily(const char* structure_constants, Parameters&&... parameters);
+	template<typename... Parameters>
+	LieGroupFamily(const string& structure_constants, Parameters&&... parameters);
+};
+
 
 /////////////////////////////////////////////////////////////////////////////////+
 //					Ready-for-use Lie group classes
@@ -229,9 +252,7 @@ public:
 
 
 template<> 
-class AbstractLieGroup<true> : public LieGroupHasParameters<true>, public ConcreteManifold, public virtual Has_dTable {
-	struct DelegatedConstructor {} delegate_constructor_tag;
-	AbstractLieGroup(DelegatedConstructor,const char* structure_constants,const lst& parameters);
+class AbstractLieGroup<true> : public LieGroupFamily {	
 public:
   /** @brief Define a Lie group by the structure constants given in Salamon's notation
    *  @param structure_constants A string of the form, e.g., "0,0,12,-13+2*42"; bracket notation such as [sqrt(3)] is allowed
@@ -242,9 +263,11 @@ public:
    * @sa ParseDifferentialForms(const exvector& frame, const char* to_parse)
   */
 	template<typename... Parameters>
-	AbstractLieGroup(const char* structure_constants, Parameters&&... parameters);
+	AbstractLieGroup(const char* structure_constants, Parameters&&... parameters) : LieGroupFamily{structure_constants, std::forward<Parameters>(parameters)...} {
+		Check_ddZero();
+	}
 	template<typename... Parameters>
-	AbstractLieGroup(const string& structure_constants, Parameters&&... parameters);
+	AbstractLieGroup(const string& structure_constants, Parameters&&... parameters) : AbstractLieGroup{structure_constants.c_str(),std::forward<Parameters>(parameters)...} {}
 };
 
 list<ex> collate();	//trivial specialization returning empty list
@@ -276,11 +299,11 @@ list<ex> collate(const NameRange& range, Parameters&&... parameters) {
 }
 
 template<typename... Parameters>
-AbstractLieGroup<true>::AbstractLieGroup(const char* structure_constants, Parameters&&... parameters) :
-	AbstractLieGroup{delegate_constructor_tag,structure_constants,collate(std::forward<Parameters>(parameters)...)} {}
+LieGroupFamily::LieGroupFamily(const char* structure_constants, Parameters&&... parameters) :
+	LieGroupFamily{delegate_constructor_tag,structure_constants,collate(std::forward<Parameters>(parameters)...)} {}
 template<typename... Parameters>
-AbstractLieGroup<true>::AbstractLieGroup(const string& structure_constants, Parameters&&... parameters) :
-	AbstractLieGroup{delegate_constructor_tag,structure_constants.c_str(),std::forward<Parameters>(parameters)...} {}
+LieGroupFamily::LieGroupFamily(const string& structure_constants, Parameters&&... parameters) :
+	LieGroupFamily{delegate_constructor_tag,structure_constants.c_str(),std::forward<Parameters>(parameters)...} {}
 
 
 /** @brief A generic Lie group, whose structure constants depend on parameters

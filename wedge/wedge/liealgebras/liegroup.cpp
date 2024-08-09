@@ -83,7 +83,7 @@ list<ex> collate() {
 	return {};
 }
 
-AbstractLieGroup<true>::AbstractLieGroup(DelegatedConstructor,const char* structure_constants,const lst& parameters)
+LieGroupFamily::LieGroupFamily(DelegatedConstructor,const char* structure_constants,const lst& parameters)
 	: ConcreteManifold(internal::GetFrameLength(structure_constants)) {
 	auto de=ParseDifferentialForms(e(),structure_constants,parameters);
 	assert(de.size()==ConcreteManifold::Dimension());

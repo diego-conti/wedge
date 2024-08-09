@@ -211,4 +211,5 @@ Added:
   convenience function horizontal, which can be used to print out vectors as a horizontal comma-separated list rather than one entry per line
   function equations_such_that_linear_map_is_derivation to test whether a given element of gl is a derivation of a Lie algebra
   added copy operator to Has_dTable
-  added LieGroupHasParameters<false>::ReplaceIn_dTable to directly update the dTable of a Lie group with parameters, without trying to solve linear equations in the parameters.
+  added LieGroupHasParameters<true>::ReplaceIn_dTable to directly update the dTable of a Lie group with parameters, without trying to solve linear equations in the parameters.
+  added class LieGroupFamily to represent a family of Lie groups depending on parameters, where the Jacobi equation is not required to ohold for all values of the parameters.

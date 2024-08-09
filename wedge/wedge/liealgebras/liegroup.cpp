@@ -76,7 +76,6 @@ AbstractLieGroup<false>::AbstractLieGroup(const char* structure_constants)  : Co
 		LOG_DEBUG(*i);
 		Declare_d(*j++,*i++);				
 	}
-	Check_ddZero();
 }
 
 list<ex> collate() {
@@ -94,7 +93,6 @@ LieGroupFamily::LieGroupFamily(DelegatedConstructor,const char* structure_consta
 		LOG_DEBUG(*i);
 		Has_dTable::Declare_d(*j++,*i++);				
 	}
-	Check_ddZero();
 }
 
 

@@ -214,3 +214,5 @@ Added:
   added copy operator to Has_dTable
  Updated:
   CMake 3.5 required
+  added LieGroupHasParameters<true>::ReplaceIn_dTable to directly update the dTable of a Lie group with parameters, without trying to solve linear equations in the parameters.
+  added class LieGroupFamily to represent a family of Lie groups depending on parameters, where the Jacobi equation is not required to ohold for all values of the parameters.

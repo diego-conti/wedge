@@ -43,7 +43,8 @@ class ParseTestSuite : public CxxTest::TestSuite
 {
 public:
 	void testParseGinac() {
-		//test if Ginac's parser works correctly on square roots
+		//test if GiNaC's parser works correctly on square roots
+		//(there is a subtle bug in parsers/default_reader.cpp which relies on functions being aligned, which is architecture-dependent)
 		ex p("sqrt(3)"s,lst{});
 		TS_ASSERT_EQUALS(p*p,3);
 		symbol a("a");

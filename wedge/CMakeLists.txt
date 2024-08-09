@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10...3.25)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_compile_definitions(IN_GINAC)
 add_compile_options(-g -O3 -Wctor-dtor-privacy -Wreorder -Wold-style-cast -Wsign-promo -Wchar-subscripts -Winit-self -Wmissing-braces -Wparentheses -Wreturn-type -Wswitch -Wtrigraphs -Wextra -Wno-sign-compare -Wno-narrowing -Wno-attributes)
+cmake_policy(SET CMP0135 OLD)
 
 set(BASE_SRC wedge/base/normalform.cpp wedge/base/logging.cpp wedge/base/utilities.cpp  wedge/base/wexception.cpp wedge/base/wedgealgebraic.cpp wedge/base/utilities.cpp)
 set(CONNECTIONS_SRC wedge/connections/connection.cpp wedge/connections/pseudolevicivita.cpp wedge/connections/transverseconnection.cpp)

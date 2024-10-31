@@ -235,7 +235,7 @@ namespace CocoaParserGrammar {
 	auto term_def  = (elem % '*')[read_mul];
 	auto negative_term_def = ( '-' > term )[read_opposite];
 	auto signed_term_def = negative_term | term;
-	auto polynomial_def = (signed_term % -x3::lit('+'))[read_sum];
+	auto polynomial_def = -x3::lit('+') > (signed_term % -x3::lit('+'))[read_sum];
 	auto equation_def = (polynomial >> '=' > polynomial)[read_equation];
 	auto equation_or_polynomial_def = equation | polynomial;
 	auto list_def = (equation_or_polynomial_def % ',') > x3::eoi; 
@@ -257,15 +257,25 @@ public:
 	template<typename Iterator> ex ParsePolynomial(Iterator begin, Iterator end)
 	{
 		ex result;
-		if (!x3::phrase_parse(begin,end,CocoaParserGrammar::equation_or_polynomial,ascii::space,result))			
+		try {
+			if (!x3::phrase_parse(begin,end,CocoaParserGrammar::equation_or_polynomial,ascii::space,result))			
 			throw ParseError("Error parsing Cocoa polynomial "+string{begin,end},__FILE__,__LINE__);
+		}
+		catch (...) {
+			throw ParseError("Error parsing Cocoa polynomial "+string{begin,end},__FILE__,__LINE__);
+		}
 		return result;
 	}
 
 	template<typename Iterator> ExVector ParsePolynomials(Iterator begin, Iterator end) {
 		ExVector result;
-		if (!x3::phrase_parse(begin,end,CocoaParserGrammar::list,ascii::space,result))			
+		try {
+			if (!x3::phrase_parse(begin,end,CocoaParserGrammar::list,ascii::space,result))			
 			throw ParseError("Error parsing Cocoa polynomial",__FILE__,__LINE__);
+		}
+		catch (...) {
+			throw ParseError("Error parsing Cocoa polynomial "+string{begin,end},__FILE__,__LINE__);
+		}
 		return result;
 	}
 };

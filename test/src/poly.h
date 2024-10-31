@@ -383,4 +383,15 @@ public:
 	}
 };
 
+class ParseCocoaPolyTesTSuite : public  CxxTest::TestSuite {
+public:
+	void testParse() {
+		symbol x{"x[0]"};
+		exvector symbols{x};
+		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"x[0]"),x);
+		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"x[0]^2-2/23*x[0]"),x*x-2*x/23);
+		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"+x[0]+x[0]^2"),x+x*x);		 
+	}
+};
+
 #endif

@@ -78,6 +78,8 @@ public:
 };
 
 /** @brief Pseudoriemannian metric on a manifold, represented by an orthonormal coframe
+ * 
+ * @deprecated Use PseudoRiemannianStructureByFrame::FromSignature
  */
  
 class StandardPseudoRiemannianStructure : public PseudoRiemannianStructure {
@@ -233,6 +235,20 @@ public:
  * The metric is taken to be of the form \epsilon_1 e^1\otimes e^1+...+\epsilon_n e^n\otimes e^n
 */
 	static PseudoRiemannianStructureByOrthonormalFrame FromSequenceOfSigns(const Manifold* manifold, const Frame& orthonormal_frame, const vector<int>& signs, CliffordConvention clifford_convention) {
+		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromSequenceOfSigns(orthonormal_frame,signs),clifford_convention};
+	}
+/** @brief 
+ *  @param manifold The manifold on which the structure is defined.
+ *  @param orthonormal_frame An orthonormal coframe with respect to which the metric is defined
+ *  @param signature The pair p,q defining the signature
+ *
+ * The metric is taken to be of the form e^1\otimes e^1+... e^p\otimes e^p - e^{p+1}\otimes e^{p+1}- ... - e^n\otimes e^n
+*/
+	static PseudoRiemannianStructureByOrthonormalFrame FromSignature(const Manifold* manifold, const Frame& orthonormal_frame, pair<int,int> signature, CliffordConvention clifford_convention) {
+		int p=signature.first;
+		vector<int> signs(manifold->Dimension());
+		fill(signs.begin(),signs.begin()+p,1);
+		fill(signs.begin()+p,signs.end(),-1);		
 		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromSequenceOfSigns(orthonormal_frame,signs),clifford_convention};
 	}
 	const ScalarProductByOrthonormalFrame& ScalarProduct() const override {return scalar_product;}

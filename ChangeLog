@@ -213,6 +213,7 @@ Added:
   Function equations_such_that_linear_map_is_derivation to test whether a given element of gl is a derivation of a Lie algebra
   Added copy operator to Has_dTable
   Parameter CliffordConvention in the constructor of class PseudoRiemannianStructureByOrthonormalFrame, to allow for two different conventions in Clifford multiplication resulting in the action of the volume form acting with different powers of I
+  Constructor FromSignature in PseudoRiemannianStructureByOrthonormalFrame (meant to replace the use of class StandardPseudoRiemannianStructure)
  Updated:
   CMake 3.5 required
   Added LieGroupHasParameters<true>::ReplaceIn_dTable to directly update the dTable of a Lie group with parameters, without trying to solve linear equations in the parameters.

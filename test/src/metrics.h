@@ -128,6 +128,16 @@ public:
 		TS_ASSERT_EQUALS(g.OnForms(e(2),e(2)),1/ex(2));
 		TS_ASSERT_EQUALS(g.OnForms(e(3),e(3)),1/ex(3));		
 	}
+	
+	void testPseudoRiemannianStructureByOrthonormalFrame() {
+		ConcreteManifold M(4);
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromSignature(&M,M.e(),{2,2},CliffordConvention::BAUM_KATH);
+		TS_ASSERT_EQUALS(g.ScalarProduct().OnVectors(M.e(1),M.e(1)),1);
+		TS_ASSERT_EQUALS(g.ScalarProduct().OnVectors(M.e(2),M.e(2)),1);
+		TS_ASSERT_EQUALS(g.ScalarProduct().OnVectors(M.e(3),M.e(3)),-1);
+		TS_ASSERT_EQUALS(g.ScalarProduct().OnVectors(M.e(4),M.e(4)),-1);
+	}
+
 
 
 	void testCliffordRiemannianOdd() {

@@ -181,7 +181,7 @@ Removed:
  
  Version 0.4.1
  Fixed:
-  fixed error in tests introduced in version 0.4.0 which resulted in exception-throwing assertions not being checked
+  Fixed error in tests introduced in version 0.4.0 which resulted in exception-throwing assertions not being checked
  Changed:
   Constructors for AbstractLieGroup now accept strings as well as string literals
   Constructors for AbstractLieGroup<true> now accept an arbitrary number of parameters of type lst, ex, Name or NameIndex
@@ -209,10 +209,11 @@ Fixed:
  AbstractLieGroup accepts expressions using commas inside [].
 Added:
   lie_group_to_string, function converting a lie group to a string in "Salamon notation"
-  convenience function horizontal, which can be used to print out vectors as a horizontal comma-separated list rather than one entry per line
-  function equations_such_that_linear_map_is_derivation to test whether a given element of gl is a derivation of a Lie algebra
-  added copy operator to Has_dTable
+  Convenience function horizontal, which can be used to print out vectors as a horizontal comma-separated list rather than one entry per line
+  Function equations_such_that_linear_map_is_derivation to test whether a given element of gl is a derivation of a Lie algebra
+  Added copy operator to Has_dTable
+  Parameter CliffordConvention in the constructor of class PseudoRiemannianStructureByOrthonormalFrame, to allow for two different conventions in Clifford multiplication resulting in the action of the volume form acting with different powers of I
  Updated:
   CMake 3.5 required
-  added LieGroupHasParameters<true>::ReplaceIn_dTable to directly update the dTable of a Lie group with parameters, without trying to solve linear equations in the parameters.
-  added class LieGroupFamily to represent a family of Lie groups depending on parameters, where the Jacobi equation is not required to ohold for all values of the parameters.
+  Added LieGroupHasParameters<true>::ReplaceIn_dTable to directly update the dTable of a Lie group with parameters, without trying to solve linear equations in the parameters.
+  Added class LieGroupFamily to represent a family of Lie groups depending on parameters, where the Jacobi equation is not required to ohold for all values of the parameters.

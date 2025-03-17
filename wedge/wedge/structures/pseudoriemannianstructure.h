@@ -124,13 +124,33 @@ public:
 	pair<ex,matrix> DecomposeRicci(matrix ricci) const override {throw NotImplemented(__FILE__,__LINE__,"PseudoRiemannianStructureByMatrix::DecomposeRicci");}
 };
 
+/** @brief Enum class for choice of convention in the Clifford product.
+ * 
+ * The values are:
+ * 
+ * - BAUM_KATH for the convention of 
+ * 		Helga Baum and Ines Kath. “Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds”. en. In: Annals of Global Analysis and
+ * 		Geometry 17.1 (Feb. 1999), pp. 1–17. issn: 1572-9060. doi: 10.1023/A:1006556630988,	
+ * 		for which to make the volume form acts as i^{(r-s+1)/2} in odd dimension 
+ * - STANDARD to make the volume form act as i^{q+n(n+1)/2} on spinors of positive chirality (even dimension) or all spinors (odd dimension)
+ */
+enum class CliffordConvention {
+	BAUM_KATH, 	/* convention of:
+		Helga Baum and Ines Kath. “Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds”. en. In: Annals of Global Analysis and
+		Geometry 17.1 (Feb. 1999), pp. 1–17. issn: 1572-9060. doi: 10.1023/A:1006556630988,	
+	*/
+	STANDARD	/* choose signs so that the volume form  acts as i^{q+n(n+1)/2} on spinors of positive chirality (even dimension) or all spinors (odd dimension)*/	
+};
+
+class CliffordProduct;
+class CliffordProductForm;
+
+
 /** @brief Base class for pseudoriemannian metrics on a manifold, represented by an orthogonal or orthonormal coframe
  */
  
-class PseudoRiemannianStructureByFrame : public PseudoRiemannianStructure {	
+ class PseudoRiemannianStructureByFrame : public PseudoRiemannianStructure {	
 protected:
-	class CliffordProduct;
-	class CliffordProductForm;
 	PseudoRiemannianStructureByFrame(const Manifold* manifold, const Frame& frame, CliffordProduct* clifford_product);	
 	pair<ex,matrix> DecomposeRicci(matrix ricci) const override;
 public:
@@ -153,10 +173,10 @@ public:
  * @param psi A spinor
  * @return The spinor \f$ X\cdot\psi\f$.
 	 
-  * @remark Clifford multiplication is implemented using the formulae of 
+  * @remark The implementation of Clifford multiplication is based on the formulae of 
  * [Baum, H. and Kath, I. Parallel Spinors and Holonomy Groups on Pseudo-Riemannian Spin Manifolds. Annals of Global Analysis and Geometry 17: 1–17, 1999.]
   *  
-  * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2}
+  * If the dimension n is odd, the Clifford multiplication by e_n is chosen with the sign that makes the volume form act as i^{(r-s+1)/2} or i^(s+n(n+1)/2) according to the value of the CliffordConvention parameter passed on initialization @sa CliffordConvention
 */
 	ex CliffordDot(ex X, ex psi) const;
 
@@ -186,7 +206,7 @@ protected:
 class PseudoRiemannianStructureByOrthonormalFrame : public PseudoRiemannianStructureByFrame {	
 	const ScalarProductByOrthonormalFrame scalar_product;
 protected:
-	PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product);
+	PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product, CliffordConvention clifford_convention);
 public:
 /** @brief 
  *  @param manifold The manifold on which the structure is defined.
@@ -195,14 +215,14 @@ public:
  *
  * The orthonormal frame e_1,..., e_n is assumed to satisfy <e_i,e_j>=-\delta_ij or \delta_ij according to whether i is in timelike_indices
 */
-	static PseudoRiemannianStructureByOrthonormalFrame FromTimelikeIndices(const Manifold* manifold, const Frame& orthonormal_frame, const list<int>& timelike_indices) {
-		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromTimelikeIndices(orthonormal_frame,timelike_indices)};
+	static PseudoRiemannianStructureByOrthonormalFrame FromTimelikeIndices(const Manifold* manifold, const Frame& orthonormal_frame, const list<int>& timelike_indices, CliffordConvention clifford_convention) {
+		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromTimelikeIndices(orthonormal_frame,timelike_indices),clifford_convention};
 	}
-	static PseudoRiemannianStructureByOrthonormalFrame FromTimelikeIndices(const Manifold* manifold, const Frame& orthonormal_frame, const vector<int>& timelike_indices) {
-		return FromTimelikeIndices(manifold,orthonormal_frame,list<int>(timelike_indices.begin(),timelike_indices.end()));
+	static PseudoRiemannianStructureByOrthonormalFrame FromTimelikeIndices(const Manifold* manifold, const Frame& orthonormal_frame, const vector<int>& timelike_indices, CliffordConvention clifford_convention) {
+		return FromTimelikeIndices(manifold,orthonormal_frame,list<int>(timelike_indices.begin(),timelike_indices.end()),clifford_convention);
 	}
-	static PseudoRiemannianStructureByOrthonormalFrame FromTimelikeIndices(const Manifold* manifold, const Frame& orthonormal_frame, std::initializer_list<int> timelike_indices) {
-		return FromTimelikeIndices(manifold,orthonormal_frame,list<int>(timelike_indices.begin(),timelike_indices.end()));
+	static PseudoRiemannianStructureByOrthonormalFrame FromTimelikeIndices(const Manifold* manifold, const Frame& orthonormal_frame, std::initializer_list<int> timelike_indices, CliffordConvention clifford_convention) {
+		return FromTimelikeIndices(manifold,orthonormal_frame,list<int>(timelike_indices.begin(),timelike_indices.end()),clifford_convention);
 	}
 
 /** @brief 
@@ -212,8 +232,8 @@ public:
  *
  * The metric is taken to be of the form \epsilon_1 e^1\otimes e^1+...+\epsilon_n e^n\otimes e^n
 */
-	static PseudoRiemannianStructureByOrthonormalFrame FromSequenceOfSigns(const Manifold* manifold, const Frame& orthonormal_frame, const vector<int>& signs) {
-		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromSequenceOfSigns(orthonormal_frame,signs)};
+	static PseudoRiemannianStructureByOrthonormalFrame FromSequenceOfSigns(const Manifold* manifold, const Frame& orthonormal_frame, const vector<int>& signs, CliffordConvention clifford_convention) {
+		return PseudoRiemannianStructureByOrthonormalFrame{manifold,orthonormal_frame,ScalarProductByOrthonormalFrame::FromSequenceOfSigns(orthonormal_frame,signs),clifford_convention};
 	}
 	const ScalarProductByOrthonormalFrame& ScalarProduct() const override {return scalar_product;}
 };
@@ -229,7 +249,7 @@ public:
  *  @param orthogonal_coframe An orthogonal coframe e^1,...,e^n with respect to which the metric is defined
  *  @param g A sequence g_1,...,g_n such that the metric takes the form g_1e^1\otimes e^1+... + g_ne^n\otimes e^n
 */
-	PseudoRiemannianStructureByOrthogonalFrame(const Manifold* manifold, const Frame& orthogonal_coframe, const ExVector& g);
+	PseudoRiemannianStructureByOrthogonalFrame(const Manifold* manifold, const Frame& orthogonal_coframe, const ExVector& g, CliffordConvention clifford_convention);
 
 	const ScalarProductByOrthogonalFrame& ScalarProduct() const override {return scalar_product;}
 };

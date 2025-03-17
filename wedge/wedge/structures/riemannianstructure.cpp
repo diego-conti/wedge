@@ -37,8 +37,8 @@ void RiemannianStructure::Deleter::operator()(RiemannianHookOperator* r) {
 	delete r;
 }
 
-RiemannianStructure::RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame) : 		
-	PseudoRiemannianStructureByOrthonormalFrame{manifold, orthonormal_frame, ScalarProductByOrthonormalFrame::FromTimelikeIndices(orthonormal_frame,{})},
+RiemannianStructure::RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame,CliffordConvention clifford_convention) : 		
+	PseudoRiemannianStructureByOrthonormalFrame{manifold, orthonormal_frame, ScalarProductByOrthonormalFrame::FromTimelikeIndices(orthonormal_frame,{}),clifford_convention},
 	hookOperator{new RiemannianHookOperator(this)}
 {}
 

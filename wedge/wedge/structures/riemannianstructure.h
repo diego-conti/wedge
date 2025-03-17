@@ -48,7 +48,7 @@ public:
  * 
  *  @warning Caller must ensure that the pointer remains valid.
  */ 
-	RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame);
+	RiemannianStructure(const Manifold* manifold, const Frame& orthonormal_frame, CliffordConvention clifford_convention=CliffordConvention::STANDARD);
 
 /**
    @brief Compute the scalar product of two vector fields, differential forms or spinors

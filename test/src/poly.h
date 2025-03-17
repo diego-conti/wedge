@@ -391,6 +391,7 @@ public:
 		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"x[0]"),x);
 		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"x[0]^2-2/23*x[0]"),x*x-2*x/23);
 		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"+x[0]+x[0]^2"),x+x*x);		 
+		TS_ASSERT_EQUALS(ParseCocoaExpression(symbols,"+(-2/3)*x[0]"),-2/ex(3)*x);		 
 	}
 };
 

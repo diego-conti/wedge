@@ -60,17 +60,14 @@ int PseudoRiemannianStructureByFrame::DimensionOfSpinorRepresentation() const
 	return 1<<(M()->Dimension()/2);
 }
 
-class PseudoRiemannianStructureByFrame::CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
+
+
+class CliffordProduct : public IBilinearOperator<LinearOperator<VectorField>,LinearOperator<Spinor>> {
 	Frame coframe;
 	ExVector taus;	//tau_k=i if e_k is timelike and 1 if spacelike
 	int s;	//the second element of the signature (r,s), i..e the number of taus that equal i
 
-	ex alpha_j(OneBased j) const {
-		int r=taus.size()-s;
-		if (j%2==0) return 1;
-		else if (j==coframe.size() && (s-r+1)%4) return -I;
-		else return I;
-	}
+	virtual ex alpha_j(OneBased j) const=0;
 
 	ex dot(OneBased j, const Spinor& spinor) const {
 		ex coeff=taus(j)*spinor.product_up_to(j/2)*alpha_j(j);
@@ -78,21 +75,22 @@ class PseudoRiemannianStructureByFrame::CliffordProduct : public IBilinearOperat
 		if (j==taus.size() && j%2==1)  return coeff*spinor;
 		else return coeff*spinor.reflect((j+1)/2);
 	}
-	CliffordProduct(const Frame& coframe, const ExVector& taus, int s) : coframe{coframe}, taus{taus},s{s} {}
+	CliffordProduct(const Frame& coframe, const ExVector& taus, int s) : coframe{coframe}, taus{taus},s{s}{}
+	static CliffordProduct* Create(const Frame& coframe,  const ExVector& taus, int s,CliffordConvention clifford_convention);
 public:
-	static CliffordProduct* FromTimelikeIndices(const Frame& coframe, const vector<int>& timelike_indices) {
+	static CliffordProduct* FromTimelikeIndices(const Frame& coframe, const vector<int>& timelike_indices,CliffordConvention clifford_convention) {
 		ExVector taus(coframe.size(),1);
 		for (int i: timelike_indices) 
 			taus(i)=I;		
-		return new CliffordProduct{coframe, taus,timelike_indices.size()};
+		return Create(coframe, taus,timelike_indices.size(),clifford_convention);
 	}
-	static CliffordProduct* FromSquareNormsOfFrameVectors(const Frame& coframe, const ExVector& square_norms_of_frame_vectors) {
+	static CliffordProduct* FromSquareNormsOfFrameVectors(const Frame& coframe, const ExVector& square_norms_of_frame_vectors,CliffordConvention clifford_convention) {
 		ExVector taus;
 		int s=0;
 		for (int i=0;i<coframe.size();++i) {
 			taus.push_back(sqrt(square_norms_of_frame_vectors[i]));
 			if (square_norms_of_frame_vectors[i]<0) ++s;		}
-		return new CliffordProduct(coframe,taus,s);
+		return Create(coframe, taus,s,clifford_convention);
 	}
 	ex Apply (const VectorField& X, const Spinor& spinor) const
 	{
@@ -103,17 +101,51 @@ public:
 				result+=component*dot(i,spinor);
 		}
 		return result;
-	}	
+	}
+	pair<int,int> signature () const {return make_pair(n()-s,s);}
+	int n() const {return taus.size();}
 };
 
-class PseudoRiemannianStructureByFrame::CliffordProductForm : public IBilinearOperator<AssociativeOperator<DifferentialForm>,LinearOperator<Spinor>> {
-	const PseudoRiemannianStructureByFrame::CliffordProduct& clifford;
+
+class BaumKathCliffordProduct : public CliffordProduct {
+	using CliffordProduct::CliffordProduct;
+public:
+	ex alpha_j(OneBased j) const {		
+		int r=signature().first;
+		int s=signature().second;
+		if (j%2==0) return 1;
+		else if (j==n() && (s-r+1)%4) return -I;
+		else return I;
+	}
+};
+
+class StandardCliffordProduct : public CliffordProduct {
+	using CliffordProduct::CliffordProduct;
+public:
+	ex alpha_j(OneBased j) const {					
+		if (j%2==0) return 1;		
+		else if (j==n() && (j+1)%4==0) return -I;
+		else return I;
+	}
+};
+		
+CliffordProduct* CliffordProduct::Create(const Frame& coframe,  const ExVector& taus, int s,CliffordConvention clifford_convention) {
+	switch (clifford_convention) {
+		case CliffordConvention::BAUM_KATH: return new BaumKathCliffordProduct(coframe, taus,s);
+		case CliffordConvention::STANDARD:  return new StandardCliffordProduct(coframe, taus,s);
+	}
+	throw WedgeException<logic_error>("Unexpected value in CliffordConvention object",__FILE__,__LINE__);
+}
+
+
+class CliffordProductForm : public IBilinearOperator<AssociativeOperator<DifferentialForm>,LinearOperator<Spinor>> {
+	const CliffordProduct& clifford;
 	const PseudoRiemannianStructure& g;
 public:
-	CliffordProductForm(const PseudoRiemannianStructureByFrame::CliffordProduct& clifford, const PseudoRiemannianStructure& g) : clifford{clifford}, g{g} {}
+	CliffordProductForm(const CliffordProduct& clifford, const PseudoRiemannianStructure& g) : clifford{clifford}, g{g} {}
 	ex Apply (const VectorField& alpha, const Spinor& psi) const {
 		auto X=g.ScalarProduct().Sharp(alpha);
-		return PseudoRiemannianStructureByFrame::CliffordProduct::BilinearOperator(X,psi,&clifford);
+		return CliffordProduct::BilinearOperator(X,psi,&clifford);
 	}
 };
 
@@ -135,19 +167,19 @@ ex PseudoRiemannianStructureByFrame::CliffordDotByForm(ex alpha, ex psi) const {
 	return CliffordProductForm::BilinearOperator(alpha,psi,clifford_product_form_operator.get());
 }
 
-PseudoRiemannianStructureByOrthonormalFrame::PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product) :
+PseudoRiemannianStructureByOrthonormalFrame::PseudoRiemannianStructureByOrthonormalFrame(const Manifold* manifold, const Frame& frame, ScalarProductByOrthonormalFrame&& scalar_product, CliffordConvention clifford_convention) :
 	PseudoRiemannianStructureByFrame(manifold,
 		frame,
-		CliffordProduct::FromTimelikeIndices(frame, scalar_product.TimelikeIndices())
+		CliffordProduct::FromTimelikeIndices(frame, scalar_product.TimelikeIndices(),clifford_convention)
 	), 
 	scalar_product{std::move(scalar_product)}
 	{}
 
-PseudoRiemannianStructureByOrthogonalFrame::PseudoRiemannianStructureByOrthogonalFrame(const Manifold *manifold, const Frame &orthogonal_coframe, const ExVector &g) :
+PseudoRiemannianStructureByOrthogonalFrame::PseudoRiemannianStructureByOrthogonalFrame(const Manifold *manifold, const Frame &orthogonal_coframe, const ExVector &g, CliffordConvention clifford_convention) :
 	PseudoRiemannianStructureByFrame(
 		manifold,
 		orthogonal_coframe,
-		CliffordProduct::FromSquareNormsOfFrameVectors(orthogonal_coframe, g)
+		CliffordProduct::FromSquareNormsOfFrameVectors(orthogonal_coframe, g,clifford_convention)
 	),
 	scalar_product{ScalarProductByOrthogonalFrame::FromVectorSquareNorms(orthogonal_coframe,g)}
 	 {}

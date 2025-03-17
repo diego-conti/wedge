@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "random": "cpp"
+        "random": "cpp",
+        "initializer_list": "cpp"
     },
     "cmake.configureOnOpen": false
 }

@@ -135,7 +135,7 @@ public:
 		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
 		auto dual=e.dual();
 		ex d1=dual(1), d2=dual(2), d3=dual(3);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,e,{});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,e,{},CliffordConvention::BAUM_KATH);
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),-u);
@@ -153,7 +153,7 @@ public:
 	void testCliffordRiemannianEven() {
 		ConcreteManifold M(4);		
 		ex d1=M.e(1), d2=M.e(2),d3=M.e(3),d4=M.e(4);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{},CliffordConvention::BAUM_KATH);
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),-u);
@@ -171,7 +171,7 @@ public:
 	void testCliffordIndefiniteEven() {
 		ConcreteManifold M(4);		
 		ex d1=M.e(1), d2=M.e(2),d3=M.e(3),d4=M.e(4);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{1,3});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{1,3},CliffordConvention::BAUM_KATH);
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),u);
@@ -192,7 +192,7 @@ public:
 		Frame e=ParseDifferentialForms(M.e(),"1+2*2, 2*2, 3");
 		auto dual=e.dual();
 		ex d1=dual(1), d2=dual(2), d3=dual(3);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,e,{1,3});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,e,{1,3},CliffordConvention::BAUM_KATH);
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)),u);
@@ -210,7 +210,7 @@ public:
 	void testDiagonalCliffordIndefiniteEven() {
 		ConcreteManifold M(4);		
 		ex d1=M.e(1), d2=M.e(2),d3=M.e(3),d4=M.e(4);
-		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,M.e(),{-1,2,-3,4});
+		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,M.e(),{-1,2,-3,4},CliffordConvention::BAUM_KATH);
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)).expand(),u);
@@ -231,7 +231,7 @@ public:
 		auto dual=e.dual();
 		ex d1=dual(1), d2=dual(2), d3=dual(3);
 		possymbol a("a");
-		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,e,{-a,a,-4});
+		auto g =PseudoRiemannianStructureByOrthogonalFrame(&M,e,{-a,a,-4},CliffordConvention::BAUM_KATH);
 		for (int i=0;i<g.DimensionOfSpinorRepresentation();++i) {
 			ex u=g.u(i);
 			TS_ASSERT_EQUALS(g.CliffordDot(d1,g.CliffordDot(d1,u)).expand(),a*u);
@@ -254,7 +254,7 @@ class SpinorTestSuite : public CxxTest::TestSuite {
 public:
 	void testSpinor4() {
 		ConcreteManifold M(4);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{},CliffordConvention::BAUM_KATH);
 		TS_ASSERT_EQUALS(g.u(0),g.u({1,1}));
 		TS_ASSERT_EQUALS(g.u(1),g.u({-1,1}));
 		TS_ASSERT_EQUALS(g.u(2),g.u({1,-1}));
@@ -267,7 +267,7 @@ public:
 	}
 	void testSpinor5() {
 		ConcreteManifold M(5);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{},CliffordConvention::BAUM_KATH);
 		TS_ASSERT_EQUALS(g.u(0),g.u({1,1}));
 		TS_ASSERT_EQUALS(g.u(1),g.u({-1,1}));
 		TS_ASSERT_EQUALS(g.u(2),g.u({1,-1}));
@@ -280,7 +280,7 @@ public:
 	}
 	void testSpinor6() {
 		ConcreteManifold M(6);
-		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
+		auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{},CliffordConvention::BAUM_KATH);
 		TS_ASSERT_EQUALS(g.u(0),g.u({1,1,1}));
 		TS_ASSERT_EQUALS(g.u(1),g.u({-1,1,1}));
 		TS_ASSERT_EQUALS(g.u(2),g.u({1,-1,1}));
@@ -294,9 +294,10 @@ public:
 
 	void testVolume3() {
 		ConcreteManifold M3(3), M5(5),M7(7);
+		
 		do_test_volume(M3);
-		//do_test_volume(M5);
-		//do_test_volume(M7);
+		do_test_volume(M5);
+		do_test_volume(M7);
 	}
 private:
 	//product by a sequence of vectors
@@ -308,12 +309,17 @@ private:
 	
 	void do_test_volume(const Manifold& M) {		
 		for (int r=0;r<=M.Dimension();++r) {
-			int s=M.Dimension()-r;
+			int n=M.Dimension();
+			int s=n-r;
 			vector<int> timelike;
 			for (int k=1;k<=s;++k) timelike.push_back(k);
-			auto g =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),timelike);
-			for (auto u : {g.u(0),g.u(1)})
-				TS_ASSERT_EQUALS(clifford(M.e(),u,g),pow(I,(r-s+1)/2)*u);
+			auto g_bk =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),timelike,CliffordConvention::BAUM_KATH);
+			for (auto u : {g_bk.u(0),g_bk.u(1)})
+				TS_ASSERT_EQUALS(clifford(M.e(),u,g_bk),pow(I,(r-s+1)/2)*u);			
+			
+			auto g_std =PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),timelike,CliffordConvention::STANDARD);
+			for (auto u : {g_std.u(0),g_std.u(1)}) 
+				TS_ASSERT_EQUALS(clifford(M.e(),u,g_std),pow(I,(s+(n*(n+1))/2))*u);			
 		}
 	}
 };

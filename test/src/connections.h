@@ -705,7 +705,7 @@ public:
 	//the Killing constant depends on conventions
 	void testSpinors() {
 		S3 M;
-		auto g=PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{});
+		auto g=PseudoRiemannianStructureByOrthonormalFrame::FromTimelikeIndices(&M,M.e(),{},CliffordConvention::BAUM_KATH);
 		auto omega=PseudoLeviCivitaConnection{&M,g};
 		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(1),g.u(0)),-1/ex(4)*g.CliffordDot(M.e(1),g.u(0)));
 		TS_ASSERT_EQUALS(omega.Nabla<Spinor>(M.e(2),g.u(0)),-1/ex(4)*g.CliffordDot(M.e(2),g.u(0)));

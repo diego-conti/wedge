@@ -209,6 +209,8 @@ namespace CocoaParserGrammar {
 		monomial = "Monomial";
 	x3::rule<class number_id, ex>
 		number = "Number";
+	x3::rule<class signed_number_id, ex>
+		signed_number = "SignedNumber";
 	x3::rule<class elem_id, ex>
 		elem = "Elem";
 	x3::rule<class term_id, ex>
@@ -231,6 +233,7 @@ namespace CocoaParserGrammar {
 	auto monomial_def = power | variable;
 	auto fraction_def = (x3::uint_ >>'/' > x3::uint_)[read_quotient] ;
 	auto number_def = fraction | x3::uint_;
+	auto signed_number_def = number | (x3::lit('(') > '-' > number > ')')[read_opposite];
 	auto elem_def = ('(' > polynomial > ')') | number | monomial;
 	auto term_def  = (elem % '*')[read_mul];
 	auto negative_term_def = ( '-' > term )[read_opposite];
@@ -240,7 +243,7 @@ namespace CocoaParserGrammar {
 	auto equation_or_polynomial_def = equation | polynomial;
 	auto list_def = (equation_or_polynomial_def % ',') > x3::eoi; 
 
-	BOOST_SPIRIT_DEFINE(variable, monomial,number,elem,term,signed_term,polynomial,equation,equation_or_polynomial,list,power,fraction,negative_term);
+	BOOST_SPIRIT_DEFINE(variable, monomial,number,signed_number,elem,term,signed_term,polynomial,equation,equation_or_polynomial,list,power,fraction,negative_term);
 }
 
 
